@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-laser-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#e85dc9" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#e85dc9" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-laser-bg)"></circle>
+            <circle cx="30" cy="30" r="20" fill="#1d1828" stroke="#e85dc9" stroke-width="1.5"></circle>
+            <rect x="14" y="28" width="32" height="4" fill="#e85dc9"></rect>
+            <rect x="14" y="28" width="32" height="1.2" fill="#fff"></rect>
+            <circle cx="44" cy="30" r="4" fill="#fff"></circle>
+          </svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-spread-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#ff8a3d" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#ff8a3d" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-spread-bg)"></circle>
+            <circle cx="30" cy="30" r="20" fill="#1d1828" stroke="#ff8a3d" stroke-width="1.5"></circle>
+            <g stroke="#ff8a3d" stroke-width="2" stroke-linecap="round">
+              <path d="M 16,30 L 30,30"></path>
+              <path d="M 18,22 L 30,30"></path>
+              <path d="M 18,38 L 30,30"></path>
+              <path d="M 22,16 L 30,30"></path>
+              <path d="M 22,44 L 30,30"></path>
+            </g>
+            <circle cx="30" cy="30" r="3" fill="#fff"></circle>
+          </svg>

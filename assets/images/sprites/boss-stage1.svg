@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 360 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="boss-hull" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5e4e75"></stop>
+                <stop offset="0.5" stop-color="#3a2f4a"></stop>
+                <stop offset="1" stop-color="#1d1828"></stop>
+              </linearGradient>
+              <radialGradient id="boss-core" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.25" stop-color="#ff6464"></stop>
+                <stop offset="0.7" stop-color="#a83232"></stop>
+                <stop offset="1" stop-color="#4a1414" stop-opacity="0.2"></stop>
+              </radialGradient>
+              <radialGradient id="boss-eye" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="1" stop-color="#1d2848"></stop>
+              </radialGradient>
+            </defs>
+
+            
+            <g stroke="#1d1828" stroke-width="1.5" fill="none" opacity="0.6">
+              <path d="M 320,120 Q 350,130 358,160"></path>
+              <path d="M 320,200 Q 350,200 358,200"></path>
+              <path d="M 320,280 Q 350,270 358,240"></path>
+            </g>
+
+            
+            <g class="arm-1">
+              <path d="M 130,80 L 90,40 L 60,20 L 30,30 L 36,46 L 70,52 L 96,68 L 126,90 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.5"></path>
+              
+              <path d="M 30,30 L 16,18 L 24,38 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <path d="M 36,46 L 18,42 L 26,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              
+              <circle cx="120" cy="70" r="10" fill="#1d1828" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle class="turret-eye" cx="120" cy="70" r="5" fill="url(#boss-eye)"></circle>
+              <circle cx="120" cy="70" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <g class="arm-2">
+              <path d="M 130,320 L 90,360 L 60,380 L 30,370 L 36,354 L 70,348 L 96,332 L 126,310 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.5"></path>
+              <path d="M 30,370 L 16,382 L 24,362 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <path d="M 36,354 L 18,358 L 26,346 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <circle cx="120" cy="330" r="10" fill="#1d1828" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle class="turret-eye" cx="120" cy="330" r="5" fill="url(#boss-eye)"></circle>
+              <circle cx="120" cy="330" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <path d="M 110,110 L 280,90 Q 320,110 320,200 Q 320,290 280,310 L 110,290 Q 90,200 110,110 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="2"></path>
+
+            
+            <g>
+              <path d="M 130,200 L 300,200" stroke="#e6d8b8" stroke-width="2" fill="none"></path>
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8">
+                <ellipse cx="150" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="180" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="210" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="240" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="270" cy="200" rx="8" ry="6"></ellipse>
+              </g>
+              <g stroke="#9a8866" stroke-width="0.6" fill="none">
+                <path d="M 150,194 L 150,180 L 158,176 M 150,206 L 150,220 L 158,224"></path>
+                <path d="M 180,194 L 180,176 L 190,172 M 180,206 L 180,224 L 190,228"></path>
+                <path d="M 210,194 L 210,172 L 220,168 M 210,206 L 210,228 L 220,232"></path>
+                <path d="M 240,194 L 240,176 L 250,172 M 240,206 L 240,224 L 250,228"></path>
+                <path d="M 270,194 L 270,180 L 278,176 M 270,206 L 270,220 L 278,224"></path>
+              </g>
+            </g>
+
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 130,140 Q 130,170 130,194"></path>
+              <path d="M 160,128 Q 160,160 160,194"></path>
+              <path d="M 190,120 Q 190,158 190,194"></path>
+              <path d="M 220,116 Q 220,156 220,194"></path>
+              <path d="M 250,118 Q 250,158 250,194"></path>
+              <path d="M 280,124 Q 280,162 280,194"></path>
+            </g>
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 130,206 Q 130,234 130,260"></path>
+              <path d="M 160,206 Q 160,240 160,272"></path>
+              <path d="M 190,206 Q 190,242 190,280"></path>
+              <path d="M 220,206 Q 220,244 220,284"></path>
+              <path d="M 250,206 Q 250,242 250,282"></path>
+              <path d="M 280,206 Q 280,238 280,276"></path>
+            </g>
+
+            
+            <ellipse cx="210" cy="200" rx="32" ry="24" fill="#0a070f"></ellipse>
+            <ellipse class="core" cx="210" cy="200" rx="22" ry="16" fill="url(#boss-core)"></ellipse>
+            <ellipse cx="210" cy="200" rx="22" ry="16" fill="none" stroke="#e6d8b8" stroke-width="1"></ellipse>
+            <circle cx="210" cy="200" r="6" fill="#fff" opacity="0.9"></circle>
+
+            
+            <g>
+              <ellipse cx="170" cy="135" rx="14" ry="8" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="170" cy="135" r="6" fill="url(#boss-eye)"></circle>
+              <circle cx="170" cy="135" r="1.6" fill="#fff"></circle>
+              <ellipse cx="200" cy="125" rx="10" ry="6" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="200" cy="125" r="4" fill="url(#boss-eye)"></circle>
+              <ellipse cx="240" cy="135" rx="14" ry="8" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="240" cy="135" r="6" fill="url(#boss-eye)"></circle>
+              <circle cx="240" cy="135" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <g>
+              <path d="M 160,260 Q 210,290 260,260 L 260,272 Q 210,300 160,272 Z" fill="#0a070f" stroke="#e6d8b8" stroke-width="0.8"></path>
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5">
+                <path d="M 170,272 L 174,284 L 178,272 Z"></path>
+                <path d="M 188,278 L 192,290 L 196,278 Z"></path>
+                <path d="M 206,282 L 210,294 L 214,282 Z"></path>
+                <path d="M 224,278 L 228,290 L 232,278 Z"></path>
+                <path d="M 242,272 L 246,284 L 250,272 Z"></path>
+              </g>
+            </g>
+
+            
+            <g fill="#9a8866">
+              <circle cx="120" cy="120" r="3.5"></circle>
+              <circle cx="120" cy="280" r="3.5"></circle>
+              <circle cx="290" cy="120" r="3.5"></circle>
+              <circle cx="290" cy="280" r="3.5"></circle>
+            </g>
+
+            
+            <g class="barrage">
+              <circle cx="100" cy="200" r="6" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="180" r="5" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="220" r="5" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="160" r="4" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="240" r="4" fill="#a83232" opacity="0"></circle>
+            </g>
+          </svg>

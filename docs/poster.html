@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<title>CARRION IX — Poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #04030a;
+  --void-2: #0a0612;
+  --bone: #e6d8b8;
+  --bone-d: #9a8866;
+  --sinew: #a83232;
+  --cyan: #5dd9e8;
+  --magenta: #e85dc9;
+  --orange: #ff8a3d;
+  --toxic: #a8e85d;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #000;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--bone);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.frame {
+  width: 1080px;
+  max-width: 100%;
+  aspect-ratio: 2 / 3;
+  position: relative;
+  overflow: hidden;
+  background: var(--void);
+  box-shadow: 0 60px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(232,93,201,0.08);
+  isolation: isolate;
+}
+
+/* ── ATMOSPHERE LAYERS ───────────────────────────── */
+.bg-nebula {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 22%, rgba(232,93,201,0.45), transparent 60%),
+    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(168,50,50,0.35), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 30% 65%, rgba(93,217,232,0.18), transparent 60%),
+    radial-gradient(ellipse 50% 30% at 80% 80%, rgba(168,232,93,0.1), transparent 60%),
+    linear-gradient(180deg, #1a0820 0%, #0a0612 45%, #04030a 100%);
+}
+
+.stars { position: absolute; inset: 0; z-index: 2; }
+
+.haze {
+  position: absolute; inset: 0; z-index: 6;
+  background:
+    radial-gradient(ellipse 70% 30% at 50% 10%, rgba(232,93,201,0.28), transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 35%, rgba(168,50,50,0.18), transparent 70%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.scan {
+  position: absolute; inset: 0; z-index: 30;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+}
+
+.grain {
+  position: absolute; inset: 0; z-index: 31;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+.vignette {
+  position: absolute; inset: 0; z-index: 32;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.7) 100%);
+}
+
+/* ── PLANET ──────────────────────────────────────── */
+.planet {
+  position: absolute;
+  z-index: 3;
+  left: -8%; top: 40%;
+  width: 70%; aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #6a3838 0%, #4a1414 30%, #1a0610 70%, #04030a 100%);
+  box-shadow: inset -40px -30px 80px rgba(0,0,0,0.8),
+              0 0 80px rgba(168,50,50,0.3);
+  opacity: 0.85;
+}
+.planet::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 80% 6% at 50% 30%, rgba(230,216,184,0.15), transparent 70%),
+    radial-gradient(ellipse 80% 4% at 50% 55%, rgba(230,216,184,0.1), transparent 70%);
+}
+.planet-ring {
+  position: absolute;
+  z-index: 3;
+  left: -22%; top: 56%;
+  width: 100%; aspect-ratio: 4/1;
+  border: 1px solid rgba(230,216,184,0.18);
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+
+/* ── BOSS — looming in upper background ──────────── */
+.boss-wrap {
+  position: absolute;
+  z-index: 4;
+  top: -2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  filter: drop-shadow(0 0 60px rgba(232,93,201,0.4)) drop-shadow(0 30px 80px rgba(0,0,0,0.9));
+  opacity: 0.95;
+}
+.boss-wrap svg { width: 100%; height: auto; display: block; }
+
+/* ── ALIENS — flanking ───────────────────────────── */
+.alien {
+  position: absolute;
+  z-index: 8;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.85));
+}
+.alien svg { width: 100%; height: auto; display: block; }
+
+.alien.cyborg-l {
+  top: 40%; left: 4%;
+  width: 18%;
+  transform: scaleX(-1) rotate(-8deg);
+  filter: drop-shadow(0 0 16px rgba(168,50,50,0.4)) drop-shadow(0 8px 24px rgba(0,0,0,0.9));
+}
+.alien.cyborg-r {
+  top: 38%; right: 4%;
+  width: 16%;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 0 16px rgba(168,50,50,0.4)) drop-shadow(0 8px 24px rgba(0,0,0,0.9));
+}
+.alien.brain-r {
+  top: 32%; right: 18%;
+  width: 14%;
+  transform: rotate(-4deg);
+  filter: drop-shadow(0 0 18px rgba(232,93,201,0.5)) drop-shadow(0 8px 24px rgba(0,0,0,0.9));
+}
+.alien.mantis-l {
+  top: 56%; left: 12%;
+  width: 22%;
+  transform: scaleX(-1) rotate(4deg);
+  filter: drop-shadow(0 0 14px rgba(168,232,93,0.35)) drop-shadow(0 12px 30px rgba(0,0,0,0.9));
+}
+.alien.crystal-r {
+  top: 56%; right: 8%;
+  width: 18%;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 0 18px rgba(93,217,232,0.4)) drop-shadow(0 12px 30px rgba(0,0,0,0.9));
+}
+.alien.wasp-1 {
+  top: 18%; left: 14%;
+  width: 12%;
+  transform: rotate(-12deg);
+  opacity: 0.75;
+}
+.alien.wasp-2 {
+  top: 22%; right: 26%;
+  width: 9%;
+  transform: rotate(8deg) scaleX(-1);
+  opacity: 0.6;
+}
+.alien.wasp-3 {
+  top: 30%; left: 28%;
+  width: 8%;
+  transform: rotate(-4deg);
+  opacity: 0.55;
+}
+
+/* ── HERO SHIP — center stage ────────────────────── */
+.hero-ship {
+  position: absolute;
+  z-index: 14;
+  top: 64%;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 30%;
+  filter:
+    drop-shadow(0 0 30px rgba(93,217,232,0.6))
+    drop-shadow(0 0 60px rgba(93,217,232,0.3))
+    drop-shadow(0 20px 40px rgba(0,0,0,0.9));
+}
+.hero-ship svg { width: 100%; height: auto; display: block; }
+
+/* engine trail behind ship */
+.ship-trail {
+  position: absolute;
+  z-index: 13;
+  top: 65%;
+  left: 18%;
+  width: 36%;
+  height: 6%;
+  background: linear-gradient(90deg, transparent, rgba(93,217,232,0) 0%, rgba(93,217,232,0.5) 60%, rgba(93,217,232,0.9) 100%);
+  filter: blur(2px);
+  transform: skewY(-1deg);
+  opacity: 0.85;
+}
+
+/* projectile streaks */
+.streaks { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+
+/* ── TITLE BLOCK ─────────────────────────────────── */
+.title-block {
+  position: absolute;
+  z-index: 20;
+  left: 0; right: 0;
+  bottom: 6%;
+  text-align: center;
+  padding: 0 8%;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.45em;
+  color: var(--bone-d);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.eyebrow .bar { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--bone-d), transparent); max-width: 120px; }
+.eyebrow b { color: var(--cyan); font-weight: 400; }
+
+.title {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 900;
+  font-size: 168px;
+  line-height: 0.82;
+  letter-spacing: -0.005em;
+  color: var(--bone);
+  text-transform: uppercase;
+  text-shadow:
+    0 0 40px rgba(232,93,201,0.3),
+    0 0 80px rgba(168,50,50,0.2);
+  position: relative;
+  margin-bottom: 8px;
+}
+.title .ix {
+  color: var(--sinew);
+  font-style: italic;
+  text-shadow:
+    0 0 20px rgba(168,50,50,0.6),
+    0 0 50px rgba(232,93,201,0.3);
+}
+
+.subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  color: var(--bone);
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+
+.tagline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-style: italic;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--bone-d);
+  letter-spacing: 0.04em;
+  max-width: 80%;
+  margin: 0 auto 28px;
+  line-height: 1.4;
+}
+.tagline em { color: var(--bone); font-style: italic; }
+
+.credits {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-d);
+  text-transform: uppercase;
+  line-height: 1.7;
+  opacity: 0.7;
+}
+.credits .row {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.credits .dot { color: var(--sinew); }
+.credits .big {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--bone);
+  margin: 6px 0;
+  text-transform: none;
+}
+
+/* ── TOP CORNER MARKS ────────────────────────────── */
+.cornermark {
+  position: absolute; z-index: 21;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--bone-d);
+  opacity: 0.6;
+}
+.cm-tl { top: 22px; left: 28px; }
+.cm-tr { top: 22px; right: 28px; text-align: right; }
+
+.cornermark .live { color: var(--toxic); }
+
+/* ── RATING BLOCK ────────────────────────────────── */
+.rating {
+  position: absolute;
+  z-index: 21;
+  bottom: 22px;
+  left: 28px;
+  display: flex; align-items: center; gap: 10px;
+}
+.rating .badge {
+  width: 38px; height: 38px;
+  border: 1.5px solid var(--bone-d);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--bone);
+  letter-spacing: -0.02em;
+}
+.rating .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: var(--bone-d);
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.platforms {
+  position: absolute;
+  z-index: 21;
+  bottom: 22px;
+  right: 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--bone-d);
+  text-align: right;
+  text-transform: uppercase;
+  line-height: 1.6;
+}
+
+/* ── tiny stars decorate ─────────────────────────── */
+.spark { position: absolute; border-radius: 50%; background: #fff; }
+
+</style>
+<style data-designer-overlay="1"></style></head>
+<body>
+
+<div class="frame" id="poster">
+
+  <div class="bg-nebula" style="background: radial-gradient(80% 60% at 50% 22%, rgba(232, 93, 201, 0.45), transparent 60%), radial-gradient(100% 80% at 50% 0%, rgba(168, 50, 50, 0.35), transparent 55%), radial-gradient(60% 40% at 30% 65%, rgba(93, 217, 232, 0.18), transparent 60%), linear-gradient(rgb(26, 8, 32) 0%, rgb(10, 6, 18) 45%, rgb(4, 3, 10) 100%);"></div>
+
+  <!-- starfield -->
+  <svg class="stars" viewBox="0 0 1080 1620" preserveAspectRatio="xMidYMid slice">
+    <g fill="#fff">
+      <circle cx="40" cy="80" r="1.2" opacity="0.7"></circle>
+      <circle cx="120" cy="160" r="0.8" opacity="0.5"></circle>
+      <circle cx="220" cy="60" r="1" opacity="0.6"></circle>
+      <circle cx="320" cy="220" r="0.6" opacity="0.4"></circle>
+      <circle cx="480" cy="120" r="1.2" opacity="0.8"></circle>
+      <circle cx="620" cy="80" r="0.8" opacity="0.6"></circle>
+      <circle cx="780" cy="180" r="1" opacity="0.5"></circle>
+      <circle cx="900" cy="60" r="0.9" opacity="0.7"></circle>
+      <circle cx="1020" cy="220" r="0.7" opacity="0.5"></circle>
+      <circle cx="60" cy="320" r="0.8" opacity="0.4"></circle>
+      <circle cx="180" cy="420" r="1" opacity="0.6"></circle>
+      <circle cx="380" cy="380" r="0.6" opacity="0.4"></circle>
+      <circle cx="540" cy="320" r="1.4" opacity="0.9"></circle>
+      <circle cx="700" cy="420" r="0.7" opacity="0.5"></circle>
+      <circle cx="860" cy="380" r="1" opacity="0.6"></circle>
+      <circle cx="980" cy="460" r="0.8" opacity="0.5"></circle>
+      <circle cx="80" cy="580" r="0.9" opacity="0.5"></circle>
+      <circle cx="280" cy="620" r="0.7" opacity="0.4"></circle>
+      <circle cx="460" cy="560" r="0.8" opacity="0.5"></circle>
+      <circle cx="640" cy="640" r="1.2" opacity="0.8"></circle>
+      <circle cx="820" cy="580" r="0.7" opacity="0.4"></circle>
+      <circle cx="980" cy="640" r="0.8" opacity="0.5"></circle>
+      <circle cx="120" cy="780" r="0.7" opacity="0.4"></circle>
+      <circle cx="320" cy="820" r="0.9" opacity="0.6"></circle>
+      <circle cx="520" cy="780" r="0.6" opacity="0.4"></circle>
+      <circle cx="720" cy="860" r="1" opacity="0.6"></circle>
+      <circle cx="900" cy="820" r="0.7" opacity="0.4"></circle>
+      <circle cx="1040" cy="880" r="0.8" opacity="0.5"></circle>
+      <circle cx="40" cy="940" r="0.9" opacity="0.5"></circle>
+      <circle cx="240" cy="1000" r="0.7" opacity="0.4"></circle>
+      <circle cx="440" cy="980" r="1.2" opacity="0.7"></circle>
+      <circle cx="640" cy="1040" r="0.6" opacity="0.4"></circle>
+      <circle cx="840" cy="1000" r="0.8" opacity="0.5"></circle>
+      <circle cx="1000" cy="1060" r="0.7" opacity="0.4"></circle>
+      <circle cx="160" cy="1180" r="0.9" opacity="0.5"></circle>
+      <circle cx="380" cy="1220" r="0.7" opacity="0.4"></circle>
+      <circle cx="580" cy="1180" r="1" opacity="0.6"></circle>
+      <circle cx="780" cy="1240" r="0.8" opacity="0.5"></circle>
+      <circle cx="960" cy="1200" r="0.7" opacity="0.4"></circle>
+      <circle cx="60" cy="1340" r="0.9" opacity="0.5"></circle>
+      <circle cx="260" cy="1400" r="0.7" opacity="0.4"></circle>
+      <circle cx="460" cy="1380" r="1" opacity="0.6"></circle>
+      <circle cx="660" cy="1440" r="0.6" opacity="0.4"></circle>
+      <circle cx="860" cy="1400" r="0.8" opacity="0.5"></circle>
+      <circle cx="1020" cy="1480" r="0.7" opacity="0.4"></circle>
+    </g>
+    <!-- larger glints -->
+    <g fill="#fff">
+      <circle cx="180" cy="160" r="2"></circle>
+      <path d="M 180,150 L 180,170 M 170,160 L 190,160" stroke="#fff" stroke-width="0.5" opacity="0.6"></path>
+      <circle cx="900" cy="280" r="2.2"></circle>
+      <path d="M 900,268 L 900,292 M 888,280 L 912,280" stroke="#fff" stroke-width="0.6" opacity="0.7"></path>
+      <circle cx="540" cy="500" r="2"></circle>
+      <path d="M 540,490 L 540,510 M 530,500 L 550,500" stroke="#fff" stroke-width="0.5" opacity="0.6"></path>
+    </g>
+  </svg>
+
+  <!-- planet -->
+  <div class="planet"></div>
+  <div class="planet-ring"></div>
+
+  <!-- BOSS, looming -->
+  <div class="boss-wrap" id="boss-slot" style="width: 88%;">
+<svg viewBox="0 0 360 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <lineargradient id="boss-hull-1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5e4e75"></stop>
+                <stop offset="0.5" stop-color="#3a2f4a"></stop>
+                <stop offset="1" stop-color="#1d1828"></stop>
+              </lineargradient>
+              <radialgradient id="boss-core-1" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.25" stop-color="#ff6464"></stop>
+                <stop offset="0.7" stop-color="#a83232"></stop>
+                <stop offset="1" stop-color="#4a1414" stop-opacity="0.2"></stop>
+              </radialgradient>
+              <radialgradient id="boss-eye-1" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="1" stop-color="#1d2848"></stop>
+              </radialgradient>
+            </defs>
+
+            
+            <g stroke="#1d1828" stroke-width="1.5" fill="none" opacity="0.6">
+              <path d="M 320,120 Q 350,130 358,160"></path>
+              <path d="M 320,200 Q 350,200 358,200"></path>
+              <path d="M 320,280 Q 350,270 358,240"></path>
+            </g>
+
+            
+            <g class="arm-1">
+              <path d="M 130,80 L 90,40 L 60,20 L 30,30 L 36,46 L 70,52 L 96,68 L 126,90 Z" fill="url(#boss-hull-1)" stroke="#0a070f" stroke-width="1.5"></path>
+              
+              <path d="M 30,30 L 16,18 L 24,38 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <path d="M 36,46 L 18,42 L 26,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              
+              <circle cx="120" cy="70" r="10" fill="#1d1828" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle class="turret-eye" cx="120" cy="70" r="5" fill="url(#boss-eye-1)"></circle>
+              <circle cx="120" cy="70" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <g class="arm-2">
+              <path d="M 130,320 L 90,360 L 60,380 L 30,370 L 36,354 L 70,348 L 96,332 L 126,310 Z" fill="url(#boss-hull-1)" stroke="#0a070f" stroke-width="1.5"></path>
+              <path d="M 30,370 L 16,382 L 24,362 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <path d="M 36,354 L 18,358 L 26,346 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <circle cx="120" cy="330" r="10" fill="#1d1828" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle class="turret-eye" cx="120" cy="330" r="5" fill="url(#boss-eye-1)"></circle>
+              <circle cx="120" cy="330" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <path d="M 110,110 L 280,90 Q 320,110 320,200 Q 320,290 280,310 L 110,290 Q 90,200 110,110 Z" fill="url(#boss-hull-1)" stroke="#0a070f" stroke-width="2"></path>
+
+            
+            <g>
+              <path d="M 130,200 L 300,200" stroke="#e6d8b8" stroke-width="2" fill="none"></path>
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8">
+                <ellipse cx="150" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="180" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="210" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="240" cy="200" rx="8" ry="6"></ellipse>
+                <ellipse cx="270" cy="200" rx="8" ry="6"></ellipse>
+              </g>
+              <g stroke="#9a8866" stroke-width="0.6" fill="none">
+                <path d="M 150,194 L 150,180 L 158,176 M 150,206 L 150,220 L 158,224"></path>
+                <path d="M 180,194 L 180,176 L 190,172 M 180,206 L 180,224 L 190,228"></path>
+                <path d="M 210,194 L 210,172 L 220,168 M 210,206 L 210,228 L 220,232"></path>
+                <path d="M 240,194 L 240,176 L 250,172 M 240,206 L 240,224 L 250,228"></path>
+                <path d="M 270,194 L 270,180 L 278,176 M 270,206 L 270,220 L 278,224"></path>
+              </g>
+            </g>
+
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 130,140 Q 130,170 130,194"></path>
+              <path d="M 160,128 Q 160,160 160,194"></path>
+              <path d="M 190,120 Q 190,158 190,194"></path>
+              <path d="M 220,116 Q 220,156 220,194"></path>
+              <path d="M 250,118 Q 250,158 250,194"></path>
+              <path d="M 280,124 Q 280,162 280,194"></path>
+            </g>
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 130,206 Q 130,234 130,260"></path>
+              <path d="M 160,206 Q 160,240 160,272"></path>
+              <path d="M 190,206 Q 190,242 190,280"></path>
+              <path d="M 220,206 Q 220,244 220,284"></path>
+              <path d="M 250,206 Q 250,242 250,282"></path>
+              <path d="M 280,206 Q 280,238 280,276"></path>
+            </g>
+
+            
+            <ellipse cx="210" cy="200" rx="32" ry="24" fill="#0a070f"></ellipse>
+            <ellipse class="core" cx="210" cy="200" rx="22" ry="16" fill="url(#boss-core-1)"></ellipse>
+            <ellipse cx="210" cy="200" rx="22" ry="16" fill="none" stroke="#e6d8b8" stroke-width="1"></ellipse>
+            <circle cx="210" cy="200" r="6" fill="#fff" opacity="0.9"></circle>
+
+            
+            <g>
+              <ellipse cx="170" cy="135" rx="14" ry="8" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="170" cy="135" r="6" fill="url(#boss-eye-1)"></circle>
+              <circle cx="170" cy="135" r="1.6" fill="#fff"></circle>
+              <ellipse cx="200" cy="125" rx="10" ry="6" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="200" cy="125" r="4" fill="url(#boss-eye-1)"></circle>
+              <ellipse cx="240" cy="135" rx="14" ry="8" fill="#0a070f"></ellipse>
+              <circle class="turret-eye" cx="240" cy="135" r="6" fill="url(#boss-eye-1)"></circle>
+              <circle cx="240" cy="135" r="1.6" fill="#fff"></circle>
+            </g>
+
+            
+            <g>
+              <path d="M 160,260 Q 210,290 260,260 L 260,272 Q 210,300 160,272 Z" fill="#0a070f" stroke="#e6d8b8" stroke-width="0.8"></path>
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5">
+                <path d="M 170,272 L 174,284 L 178,272 Z"></path>
+                <path d="M 188,278 L 192,290 L 196,278 Z"></path>
+                <path d="M 206,282 L 210,294 L 214,282 Z"></path>
+                <path d="M 224,278 L 228,290 L 232,278 Z"></path>
+                <path d="M 242,272 L 246,284 L 250,272 Z"></path>
+              </g>
+            </g>
+
+            
+            <g fill="#9a8866">
+              <circle cx="120" cy="120" r="3.5"></circle>
+              <circle cx="120" cy="280" r="3.5"></circle>
+              <circle cx="290" cy="120" r="3.5"></circle>
+              <circle cx="290" cy="280" r="3.5"></circle>
+            </g>
+
+            
+            <g class="barrage">
+              <circle cx="100" cy="200" r="6" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="180" r="5" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="220" r="5" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="160" r="4" fill="#a83232" opacity="0"></circle>
+              <circle cx="100" cy="240" r="4" fill="#a83232" opacity="0"></circle>
+            </g>
+          </svg></div>
+
+  <!-- swarm of wasp drones -->
+  <div class="alien wasp-1" id="wasp-1" style="display: block;">
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            
+            <g class="wing-t">
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,32 Q 100,28 130,32" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+              <path d="M 80,32 L 80,28 M 90,32 L 90,26 M 100,32 L 100,25 M 110,32 L 110,26 M 120,32 L 120,28" stroke="#e6d8b8" stroke-width="0.4"></path>
+            </g>
+            
+            <g class="wing-b">
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,68 Q 100,72 130,68" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+            </g>
+
+            
+            <ellipse cx="115" cy="50" rx="22" ry="12" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g stroke="#9a8866" stroke-width="0.5" fill="none">
+              <path d="M 100,50 Q 105,42 110,50 Q 115,58 120,50 Q 125,42 130,50"></path>
+            </g>
+            
+            <path d="M 95,50 Q 95,46 99,46 L 99,54 Q 95,54 95,50 Z" fill="#1d1828" stroke="#9a8866" stroke-width="0.5"></path>
+
+            
+            <ellipse cx="155" cy="50" rx="20" ry="9" fill="#a8e85d" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g fill="#0a070f">
+              <path d="M 142,42 Q 144,50 142,58 L 146,58 Q 148,50 146,42 Z"></path>
+              <path d="M 156,42 Q 158,50 156,58 L 160,58 Q 162,50 160,42 Z"></path>
+            </g>
+            
+            <path d="M 175,50 L 188,46 L 192,50 L 188,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            <path d="M 188,50 L 196,50" stroke="#a83232" stroke-width="1.4"></path>
+
+            
+            <circle cx="86" cy="50" r="11" fill="#1d1828" stroke="#0a070f" stroke-width="1"></circle>
+            
+            <path d="M 78,46 L 70,42 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            <path d="M 78,54 L 70,58 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            
+            <circle class="eye" cx="84" cy="48" r="5" fill="#a8e85d"></circle>
+            <circle cx="83" cy="46" r="1.4" fill="#fff"></circle>
+            
+            <path d="M 84,40 Q 78,28 82,18" stroke="#e6d8b8" stroke-width="0.8" fill="none"></path>
+            <circle cx="82" cy="16" r="1.2" fill="#a83232"></circle>
+
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 105,60 L 100,72 L 96,72"></path>
+              <path d="M 115,62 L 113,76 L 108,78"></path>
+              <path d="M 125,60 L 130,72 L 134,72"></path>
+            </g>
+
+            
+            <g class="stinger-r">
+              <path d="M 80,50 L 70,48 L 60,50 L 70,52 Z" fill="#a8e85d"></path>
+              <circle cx="60" cy="50" r="1.6" fill="#fff"></circle>
+            </g>
+          </svg></div>
+  <div class="alien wasp-2" id="wasp-2" style="display: block;">
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            
+            <g class="wing-t">
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,32 Q 100,28 130,32" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+              <path d="M 80,32 L 80,28 M 90,32 L 90,26 M 100,32 L 100,25 M 110,32 L 110,26 M 120,32 L 120,28" stroke="#e6d8b8" stroke-width="0.4"></path>
+            </g>
+            
+            <g class="wing-b">
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,68 Q 100,72 130,68" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+            </g>
+
+            
+            <ellipse cx="115" cy="50" rx="22" ry="12" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g stroke="#9a8866" stroke-width="0.5" fill="none">
+              <path d="M 100,50 Q 105,42 110,50 Q 115,58 120,50 Q 125,42 130,50"></path>
+            </g>
+            
+            <path d="M 95,50 Q 95,46 99,46 L 99,54 Q 95,54 95,50 Z" fill="#1d1828" stroke="#9a8866" stroke-width="0.5"></path>
+
+            
+            <ellipse cx="155" cy="50" rx="20" ry="9" fill="#a8e85d" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g fill="#0a070f">
+              <path d="M 142,42 Q 144,50 142,58 L 146,58 Q 148,50 146,42 Z"></path>
+              <path d="M 156,42 Q 158,50 156,58 L 160,58 Q 162,50 160,42 Z"></path>
+            </g>
+            
+            <path d="M 175,50 L 188,46 L 192,50 L 188,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            <path d="M 188,50 L 196,50" stroke="#a83232" stroke-width="1.4"></path>
+
+            
+            <circle cx="86" cy="50" r="11" fill="#1d1828" stroke="#0a070f" stroke-width="1"></circle>
+            
+            <path d="M 78,46 L 70,42 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            <path d="M 78,54 L 70,58 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            
+            <circle class="eye" cx="84" cy="48" r="5" fill="#a8e85d"></circle>
+            <circle cx="83" cy="46" r="1.4" fill="#fff"></circle>
+            
+            <path d="M 84,40 Q 78,28 82,18" stroke="#e6d8b8" stroke-width="0.8" fill="none"></path>
+            <circle cx="82" cy="16" r="1.2" fill="#a83232"></circle>
+
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 105,60 L 100,72 L 96,72"></path>
+              <path d="M 115,62 L 113,76 L 108,78"></path>
+              <path d="M 125,60 L 130,72 L 134,72"></path>
+            </g>
+
+            
+            <g class="stinger-r">
+              <path d="M 80,50 L 70,48 L 60,50 L 70,52 Z" fill="#a8e85d"></path>
+              <circle cx="60" cy="50" r="1.6" fill="#fff"></circle>
+            </g>
+          </svg></div>
+  <div class="alien wasp-3" id="wasp-3" style="display: block;">
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            
+            <g class="wing-t">
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="32" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,32 Q 100,28 130,32" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+              <path d="M 80,32 L 80,28 M 90,32 L 90,26 M 100,32 L 100,25 M 110,32 L 110,26 M 120,32 L 120,28" stroke="#e6d8b8" stroke-width="0.4"></path>
+            </g>
+            
+            <g class="wing-b">
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="#5dd9e8" opacity="0.25"></ellipse>
+              <ellipse cx="100" cy="68" rx="34" ry="10" fill="none" stroke="#5dd9e8" stroke-width="0.8" opacity="0.6"></ellipse>
+              <path d="M 70,68 Q 100,72 130,68" stroke="#e6d8b8" stroke-width="0.6" fill="none"></path>
+            </g>
+
+            
+            <ellipse cx="115" cy="50" rx="22" ry="12" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g stroke="#9a8866" stroke-width="0.5" fill="none">
+              <path d="M 100,50 Q 105,42 110,50 Q 115,58 120,50 Q 125,42 130,50"></path>
+            </g>
+            
+            <path d="M 95,50 Q 95,46 99,46 L 99,54 Q 95,54 95,50 Z" fill="#1d1828" stroke="#9a8866" stroke-width="0.5"></path>
+
+            
+            <ellipse cx="155" cy="50" rx="20" ry="9" fill="#a8e85d" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g fill="#0a070f">
+              <path d="M 142,42 Q 144,50 142,58 L 146,58 Q 148,50 146,42 Z"></path>
+              <path d="M 156,42 Q 158,50 156,58 L 160,58 Q 162,50 160,42 Z"></path>
+            </g>
+            
+            <path d="M 175,50 L 188,46 L 192,50 L 188,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            <path d="M 188,50 L 196,50" stroke="#a83232" stroke-width="1.4"></path>
+
+            
+            <circle cx="86" cy="50" r="11" fill="#1d1828" stroke="#0a070f" stroke-width="1"></circle>
+            
+            <path d="M 78,46 L 70,42 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            <path d="M 78,54 L 70,58 L 76,50 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5"></path>
+            
+            <circle class="eye" cx="84" cy="48" r="5" fill="#a8e85d"></circle>
+            <circle cx="83" cy="46" r="1.4" fill="#fff"></circle>
+            
+            <path d="M 84,40 Q 78,28 82,18" stroke="#e6d8b8" stroke-width="0.8" fill="none"></path>
+            <circle cx="82" cy="16" r="1.2" fill="#a83232"></circle>
+
+            
+            <g stroke="#1d1828" stroke-width="1.2" fill="none">
+              <path d="M 105,60 L 100,72 L 96,72"></path>
+              <path d="M 115,62 L 113,76 L 108,78"></path>
+              <path d="M 125,60 L 130,72 L 134,72"></path>
+            </g>
+
+            
+            <g class="stinger-r">
+              <path d="M 80,50 L 70,48 L 60,50 L 70,52 Z" fill="#a8e85d"></path>
+              <circle cx="60" cy="50" r="1.6" fill="#fff"></circle>
+            </g>
+          </svg></div>
+
+  <!-- mid-ground enemies -->
+  <div class="alien brain-r" id="brain-r">
+<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="dome-glass-5" cx="0.4" cy="0.3" r="0.7">
+                <stop offset="0" stop-color="#e85dc9" stop-opacity="0.3"></stop>
+                <stop offset="1" stop-color="#e85dc9" stop-opacity="0.6"></stop>
+              </radialgradient>
+            </defs>
+
+            
+            <path d="M 60,82 L 60,110 L 50,118 L 50,128 L 70,128 L 70,114 L 130,114 L 130,128 L 150,128 L 150,118 L 140,110 L 140,82 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1.2"></path>
+            <rect x="68" y="92" width="64" height="14" fill="#1d1828" stroke="#9a8866" stroke-width="0.5"></rect>
+            <g stroke="#9a8866" stroke-width="0.5">
+              <line x1="78" y1="92" x2="78" y2="106"></line>
+              <line x1="92" y1="92" x2="92" y2="106"></line>
+              <line x1="106" y1="92" x2="106" y2="106"></line>
+              <line x1="120" y1="92" x2="120" y2="106"></line>
+            </g>
+            <circle cx="100" cy="99" r="3" fill="#5dd9e8"></circle>
+
+            
+            <g stroke="#0a070f" stroke-width="1" fill="#3a2f4a">
+              <path d="M 56,128 L 50,140 L 38,148 L 42,152 L 60,144 L 64,134 Z"></path>
+              <path d="M 144,128 L 150,140 L 162,148 L 158,152 L 140,144 L 136,134 Z"></path>
+              <path d="M 76,128 L 78,144 L 70,152 L 84,150 L 90,140 L 88,130 Z"></path>
+              <path d="M 124,128 L 122,144 L 130,152 L 116,150 L 110,140 L 112,130 Z"></path>
+            </g>
+
+            
+            <g fill="#a83232" stroke="#4a1414" stroke-width="0.8">
+              <path class="tentacle-1" d="M 90,112 Q 86,128 80,144 Q 78,150 84,152 Q 90,140 92,124 Z"></path>
+              <path class="tentacle-2" d="M 104,114 Q 102,134 98,150 Q 96,156 102,156 Q 108,140 108,118 Z"></path>
+              <path class="tentacle-3" d="M 118,112 Q 122,128 128,144 Q 130,150 124,152 Q 116,140 114,122 Z"></path>
+              
+              <circle cx="86" cy="140" r="1.2" fill="#4a1414"></circle>
+              <circle cx="100" cy="146" r="1.2" fill="#4a1414"></circle>
+              <circle cx="124" cy="138" r="1.2" fill="#4a1414"></circle>
+            </g>
+
+            
+            <ellipse cx="100" cy="82" rx="46" ry="6" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></ellipse>
+            <g stroke="#9a8866" stroke-width="0.5">
+              <circle cx="62" cy="82" r="1.4" fill="#5dd9e8"></circle>
+              <circle cx="78" cy="82" r="1.4" fill="#5dd9e8"></circle>
+              <circle cx="100" cy="82" r="1.4" fill="#e6d8b8"></circle>
+              <circle cx="122" cy="82" r="1.4" fill="#5dd9e8"></circle>
+              <circle cx="138" cy="82" r="1.4" fill="#5dd9e8"></circle>
+            </g>
+
+            
+            <ellipse class="dome" cx="100" cy="58" rx="42" ry="36" fill="url(#dome-glass-5)" stroke="#e6d8b8" stroke-width="1.2"></ellipse>
+            
+            <ellipse cx="84" cy="42" rx="14" ry="8" fill="#fff" opacity="0.18"></ellipse>
+
+            
+            <g fill="#a83232" stroke="#4a1414" stroke-width="1">
+              <path d="M 78,52 Q 74,42 84,38 Q 92,30 100,36 Q 108,30 116,38 Q 126,42 122,52 Q 130,60 122,72 Q 116,80 100,80 Q 84,80 78,72 Q 70,60 78,52 Z"></path>
+            </g>
+            
+            <g fill="none" stroke="#4a1414" stroke-width="0.8">
+              <path d="M 84,46 Q 88,52 86,58 Q 84,64 88,70"></path>
+              <path d="M 100,40 Q 100,52 96,58 Q 100,66 100,76"></path>
+              <path d="M 116,46 Q 112,52 114,58 Q 116,64 112,70"></path>
+            </g>
+            
+            <g stroke="#e6d8b8" stroke-width="0.8" fill="#1d1828">
+              <line x1="92" y1="36" x2="90" y2="26"></line>
+              <circle cx="90" cy="24" r="3" fill="#5dd9e8"></circle>
+              <circle cx="90" cy="24" r="1.2" fill="#fff"></circle>
+              <line x1="108" y1="36" x2="110" y2="26"></line>
+              <circle cx="110" cy="24" r="3" fill="#5dd9e8"></circle>
+              <circle cx="110" cy="24" r="1.2" fill="#fff"></circle>
+            </g>
+
+            
+            <g class="pod-r">
+              <circle cx="40" cy="100" r="5" fill="#e85dc9" opacity="0.4"></circle>
+              <circle cx="40" cy="100" r="3" fill="#e85dc9"></circle>
+              <circle cx="40" cy="100" r="1.2" fill="#fff"></circle>
+            </g>
+          </svg></div>
+  <div class="alien cyborg-l" id="cyborg-l">
+<svg viewBox="0 0 180 130" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="cy-eye-3" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.25" stop-color="#ff6464"></stop>
+                <stop offset="1" stop-color="#4a1414" stop-opacity="0.2"></stop>
+              </radialgradient>
+            </defs>
+
+            
+            <g stroke="#3a2f4a" stroke-width="1.2" fill="none" stroke-linecap="round">
+              <path d="M 165,55 Q 175,52 178,60"></path>
+              <path d="M 168,65 Q 178,62 178,72"></path>
+              <path d="M 165,80 Q 175,82 178,88"></path>
+              <path d="M 158,90 Q 170,98 175,105"></path>
+            </g>
+            
+            <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6">
+              <ellipse cx="158" cy="68" rx="3.5" ry="2.5"></ellipse>
+              <ellipse cx="168" cy="74" rx="3" ry="2.2"></ellipse>
+              <ellipse cx="176" cy="82" rx="2.6" ry="1.8"></ellipse>
+            </g>
+
+            
+            <path d="M 30,60 Q 30,30 70,28 Q 120,26 150,52 Q 158,70 148,88 Q 130,100 110,98 L 60,98 Q 30,90 30,60 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="1.2"></path>
+
+            
+            <path d="M 38,55 Q 60,30 110,30 Q 142,32 150,52 L 148,58 Q 130,42 100,42 Q 60,42 40,60 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></path>
+            <g stroke="#9a8866" stroke-width="0.6" fill="#5dd9e8">
+              <circle cx="60" cy="48" r="1.4"></circle>
+              <circle cx="80" cy="40" r="1.4"></circle>
+              <circle cx="100" cy="38" r="1.4"></circle>
+              <circle cx="120" cy="40" r="1.4"></circle>
+              <circle cx="138" cy="46" r="1.4"></circle>
+            </g>
+
+            
+            <ellipse cx="86" cy="70" rx="22" ry="16" fill="#0a070f"></ellipse>
+            <ellipse cx="86" cy="70" rx="20" ry="14" fill="#1d1828"></ellipse>
+            <circle class="eye" cx="92" cy="70" r="9" fill="url(#cy-eye-3)"></circle>
+            <circle cx="92" cy="70" r="3" fill="#fff"></circle>
+            
+            <g stroke="#a83232" stroke-width="0.6" fill="none" opacity="0.7">
+              <circle cx="92" cy="70" r="11"></circle>
+              <path d="M 92,57 L 92,62 M 92,78 L 92,83 M 79,70 L 84,70 M 100,70 L 105,70"></path>
+            </g>
+
+            
+            <path d="M 124,72 L 130,80 L 122,82 Z" fill="#0a070f"></path>
+            <rect x="118" y="72" width="2" height="6" fill="#5dd9e8"></rect>
+
+            
+            <g class="jaw">
+              <path d="M 55,98 Q 70,108 95,110 Q 122,108 138,98 L 138,104 Q 120,118 95,118 Q 70,118 55,104 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="1"></path>
+              
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5">
+                <path d="M 64,108 L 66,114 L 68,108 Z"></path>
+                <path d="M 74,110 L 76,116 L 78,110 Z"></path>
+                <path d="M 86,111 L 88,117 L 90,111 Z"></path>
+                <path d="M 98,111 L 100,117 L 102,111 Z"></path>
+                <path d="M 110,110 L 112,116 L 114,110 Z"></path>
+                <path d="M 122,108 L 124,114 L 126,108 Z"></path>
+              </g>
+              
+              <circle cx="60" cy="100" r="1.6" fill="#9a8866"></circle>
+              <circle cx="135" cy="100" r="1.6" fill="#9a8866"></circle>
+            </g>
+
+            
+            <circle cx="42" cy="62" r="2.5" fill="#9a8866"></circle>
+            <circle cx="42" cy="62" r="0.8" fill="#0a070f"></circle>
+            <circle cx="42" cy="78" r="2.5" fill="#9a8866"></circle>
+            <circle cx="42" cy="78" r="0.8" fill="#0a070f"></circle>
+
+            
+            <path d="M 70,60 L 64,78 L 70,84" fill="none" stroke="#9a8866" stroke-width="0.7"></path>
+
+            
+            <g class="bullet-r">
+              <circle cx="30" cy="70" r="2.4" fill="#a83232"></circle>
+              <circle cx="30" cy="70" r="1" fill="#fff"></circle>
+            </g>
+          </svg></div>
+  <div class="alien cyborg-r" id="cyborg-r">
+<svg viewBox="0 0 180 130" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="cy-eye-4" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.25" stop-color="#ff6464"></stop>
+                <stop offset="1" stop-color="#4a1414" stop-opacity="0.2"></stop>
+              </radialgradient>
+            </defs>
+
+            
+            <g stroke="#3a2f4a" stroke-width="1.2" fill="none" stroke-linecap="round">
+              <path d="M 165,55 Q 175,52 178,60"></path>
+              <path d="M 168,65 Q 178,62 178,72"></path>
+              <path d="M 165,80 Q 175,82 178,88"></path>
+              <path d="M 158,90 Q 170,98 175,105"></path>
+            </g>
+            
+            <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6">
+              <ellipse cx="158" cy="68" rx="3.5" ry="2.5"></ellipse>
+              <ellipse cx="168" cy="74" rx="3" ry="2.2"></ellipse>
+              <ellipse cx="176" cy="82" rx="2.6" ry="1.8"></ellipse>
+            </g>
+
+            
+            <path d="M 30,60 Q 30,30 70,28 Q 120,26 150,52 Q 158,70 148,88 Q 130,100 110,98 L 60,98 Q 30,90 30,60 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="1.2"></path>
+
+            
+            <path d="M 38,55 Q 60,30 110,30 Q 142,32 150,52 L 148,58 Q 130,42 100,42 Q 60,42 40,60 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></path>
+            <g stroke="#9a8866" stroke-width="0.6" fill="#5dd9e8">
+              <circle cx="60" cy="48" r="1.4"></circle>
+              <circle cx="80" cy="40" r="1.4"></circle>
+              <circle cx="100" cy="38" r="1.4"></circle>
+              <circle cx="120" cy="40" r="1.4"></circle>
+              <circle cx="138" cy="46" r="1.4"></circle>
+            </g>
+
+            
+            <ellipse cx="86" cy="70" rx="22" ry="16" fill="#0a070f"></ellipse>
+            <ellipse cx="86" cy="70" rx="20" ry="14" fill="#1d1828"></ellipse>
+            <circle class="eye" cx="92" cy="70" r="9" fill="url(#cy-eye-4)"></circle>
+            <circle cx="92" cy="70" r="3" fill="#fff"></circle>
+            
+            <g stroke="#a83232" stroke-width="0.6" fill="none" opacity="0.7">
+              <circle cx="92" cy="70" r="11"></circle>
+              <path d="M 92,57 L 92,62 M 92,78 L 92,83 M 79,70 L 84,70 M 100,70 L 105,70"></path>
+            </g>
+
+            
+            <path d="M 124,72 L 130,80 L 122,82 Z" fill="#0a070f"></path>
+            <rect x="118" y="72" width="2" height="6" fill="#5dd9e8"></rect>
+
+            
+            <g class="jaw">
+              <path d="M 55,98 Q 70,108 95,110 Q 122,108 138,98 L 138,104 Q 120,118 95,118 Q 70,118 55,104 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="1"></path>
+              
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.5">
+                <path d="M 64,108 L 66,114 L 68,108 Z"></path>
+                <path d="M 74,110 L 76,116 L 78,110 Z"></path>
+                <path d="M 86,111 L 88,117 L 90,111 Z"></path>
+                <path d="M 98,111 L 100,117 L 102,111 Z"></path>
+                <path d="M 110,110 L 112,116 L 114,110 Z"></path>
+                <path d="M 122,108 L 124,114 L 126,108 Z"></path>
+              </g>
+              
+              <circle cx="60" cy="100" r="1.6" fill="#9a8866"></circle>
+              <circle cx="135" cy="100" r="1.6" fill="#9a8866"></circle>
+            </g>
+
+            
+            <circle cx="42" cy="62" r="2.5" fill="#9a8866"></circle>
+            <circle cx="42" cy="62" r="0.8" fill="#0a070f"></circle>
+            <circle cx="42" cy="78" r="2.5" fill="#9a8866"></circle>
+            <circle cx="42" cy="78" r="0.8" fill="#0a070f"></circle>
+
+            
+            <path d="M 70,60 L 64,78 L 70,84" fill="none" stroke="#9a8866" stroke-width="0.7"></path>
+
+            
+            <g class="bullet-r">
+              <circle cx="30" cy="70" r="2.4" fill="#a83232"></circle>
+              <circle cx="30" cy="70" r="1" fill="#fff"></circle>
+            </g>
+          </svg></div>
+  <div class="alien mantis-l" id="mantis-l">
+<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="mt-core-6" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.3" stop-color="#a8e85d"></stop>
+                <stop offset="1" stop-color="#3a4a14" stop-opacity="0.2"></stop>
+              </radialgradient>
+            </defs>
+
+            
+            <g stroke="#0a070f" stroke-width="1.2" fill="#1d1828">
+              <path d="M 170,90 L 200,72 L 208,80 L 198,88 L 178,98 Z"></path>
+              <path d="M 170,90 L 200,108 L 208,100 L 198,92 Z"></path>
+            </g>
+
+            
+            <path d="M 158,84 Q 200,80 210,90 Q 200,108 158,104 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1.2"></path>
+            <g stroke="#9a8866" stroke-width="0.6" fill="none">
+              <path d="M 168,84 Q 168,94 168,104"></path>
+              <path d="M 180,82 Q 180,94 180,106"></path>
+              <path d="M 192,82 Q 192,94 192,106"></path>
+              <path d="M 204,86 Q 204,94 204,102"></path>
+            </g>
+
+            
+            <path d="M 100,80 L 158,76 Q 168,90 158,108 L 100,104 Q 92,92 100,80 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1.2"></path>
+            
+            <circle class="core" cx="128" cy="92" r="11" fill="url(#mt-core-6)"></circle>
+            <circle cx="128" cy="92" r="11" fill="none" stroke="#e6d8b8" stroke-width="1"></circle>
+            <circle cx="128" cy="92" r="4" fill="#fff"></circle>
+
+            
+            <g stroke="#0a070f" stroke-width="1" fill="#1d1828">
+              <path d="M 128,108 L 122,130 L 116,134 L 122,138 L 128,124 Z"></path>
+              <path d="M 148,108 L 152,130 L 158,134 L 152,138 L 148,124 Z"></path>
+            </g>
+
+            
+            <path d="M 80,76 L 100,80 L 100,104 L 80,108 Q 70,92 80,76 Z" fill="#1d1828" stroke="#0a070f" stroke-width="1.2"></path>
+            
+            <path d="M 80,84 L 64,80 L 70,90 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            <path d="M 80,100 L 64,104 L 70,94 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            
+            <ellipse cx="86" cy="84" rx="6" ry="4" fill="#a8e85d"></ellipse>
+            <ellipse cx="86" cy="100" rx="6" ry="4" fill="#a8e85d"></ellipse>
+            <circle cx="84" cy="83" r="1.2" fill="#fff"></circle>
+            <circle cx="84" cy="99" r="1.2" fill="#fff"></circle>
+
+            
+            <g class="scythe-1">
+              <path d="M 120,55 L 90,45 L 60,30 L 30,28 Q 28,32 36,36 L 64,40 L 90,52 L 118,60 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></path>
+              
+              <path d="M 30,28 L 24,22 L 14,30 L 28,32 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              
+              <path d="M 50,38 L 50,32 M 64,40 L 64,32 M 80,44 L 80,36" stroke="#e6d8b8" stroke-width="1"></path>
+            </g>
+            <g class="scythe-2">
+              <path d="M 120,65 L 90,75 L 60,90 L 30,92 Q 28,88 36,84 L 64,80 L 90,68 L 118,60 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></path>
+              <path d="M 30,92 L 24,98 L 14,90 L 28,88 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8"></path>
+              <path d="M 50,82 L 50,88 M 64,80 L 64,88 M 80,76 L 80,84" stroke="#e6d8b8" stroke-width="1"></path>
+            </g>
+
+            
+            <g class="blade-r">
+              <path d="M 60,90 L 50,82 L 38,90 L 50,98 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+              <circle cx="50" cy="90" r="1.6" fill="#a8e85d"></circle>
+            </g>
+          </svg></div>
+  <div class="alien crystal-r" id="crystal-r">
+<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialgradient id="cr-core-7" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="1" stop-color="#1d2848" stop-opacity="0.2"></stop>
+              </radialgradient>
+              <lineargradient id="cr-shard-7" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#5dd9e8" stop-opacity="0.85"></stop>
+                <stop offset="1" stop-color="#3a2f4a"></stop>
+              </lineargradient>
+            </defs>
+
+            
+            <path d="M 50,80 Q 50,40 100,30 Q 156,40 154,86 Q 150,128 100,134 Q 50,128 50,80 Z" fill="#1d1828" stroke="#0a070f" stroke-width="1.2"></path>
+            
+            <g fill="#3a2f4a">
+              <ellipse cx="68" cy="56" rx="6" ry="3"></ellipse>
+              <ellipse cx="124" cy="64" rx="5" ry="2.5"></ellipse>
+              <ellipse cx="78" cy="106" rx="4" ry="2"></ellipse>
+              <ellipse cx="130" cy="114" rx="5" ry="2.5"></ellipse>
+            </g>
+
+            
+            <g class="shard">
+              <path d="M 100,30 L 86,4 L 96,28 L 92,2 L 102,28 L 110,6 L 108,28 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 150,86 L 178,80 L 158,90 L 184,94 L 156,96 L 178,108 L 154,98 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 50,86 L 24,76 L 44,90 L 18,98 L 46,96 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 100,134 L 86,158 L 96,136 L 100,156 L 104,136 L 116,158 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              
+              <path d="M 60,40 L 50,28 L 64,38 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.5"></path>
+              <path d="M 138,42 L 150,30 L 134,40 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.5"></path>
+              <path d="M 60,124 L 50,138 L 64,128 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.5"></path>
+            </g>
+
+            
+            <circle cx="100" cy="82" r="32" fill="#0a070f" stroke="#9a8866" stroke-width="0.6"></circle>
+            <g stroke="#9a8866" stroke-width="0.5" fill="none">
+              <circle cx="100" cy="82" r="28"></circle>
+              <path d="M 100,54 L 100,58 M 100,106 L 100,110 M 72,82 L 76,82 M 124,82 L 128,82"></path>
+            </g>
+
+            
+            <circle class="core" cx="100" cy="82" r="14" fill="url(#cr-core-7)"></circle>
+            <circle cx="100" cy="82" r="14" fill="none" stroke="#5dd9e8" stroke-width="0.8"></circle>
+            <circle cx="100" cy="82" r="5" fill="#fff"></circle>
+
+            
+            <g class="splinter-r">
+              <path d="M 30,82 L 12,76 L 4,82 L 12,88 Z" fill="url(#cr-shard-7)" stroke="#e6d8b8" stroke-width="0.5"></path>
+            </g>
+          </svg></div>
+
+  <!-- haze on top of midground -->
+  <div class="haze"></div>
+
+  <!-- streaks -->
+  <svg class="streaks" viewBox="0 0 1080 1620" preserveAspectRatio="none" style="display: block;">
+    <defs>
+      <lineargradient id="cyan-streak" x1="0" x2="1">
+        <stop offset="0" stop-color="#5dd9e8" stop-opacity="0"></stop>
+        <stop offset="0.85" stop-color="#5dd9e8" stop-opacity="0.9"></stop>
+        <stop offset="1" stop-color="#fff"></stop>
+      </lineargradient>
+      <lineargradient id="red-streak" x1="0" x2="1">
+        <stop offset="0" stop-color="#a83232" stop-opacity="0"></stop>
+        <stop offset="0.85" stop-color="#a83232" stop-opacity="0.9"></stop>
+        <stop offset="1" stop-color="#fff"></stop>
+      </lineargradient>
+    </defs>
+    <!-- player projectiles streaking right -->
+    <rect x="540" y="1080" width="200" height="3" fill="url(#cyan-streak)"></rect>
+    <rect x="600" y="1100" width="160" height="2" fill="url(#cyan-streak)" opacity="0.7"></rect>
+    <rect x="560" y="1060" width="180" height="2" fill="url(#cyan-streak)" opacity="0.6"></rect>
+    <!-- enemy projectiles streaking left -->
+    <rect x="380" y="1140" width="180" height="3" fill="url(#red-streak)" transform="rotate(180 470 1141)"></rect>
+    <rect x="420" y="1160" width="140" height="2" fill="url(#red-streak)" opacity="0.7" transform="rotate(180 490 1161)"></rect>
+  </svg>
+
+  <!-- engine trail -->
+  <div class="ship-trail" style="background: linear-gradient(90deg, transparent, rgba(93, 217, 232, 0) 0%, rgba(93, 217, 232, 0.5) 60%, rgba(93, 217, 232, 0.9) 100%); display: block;"></div>
+
+  <!-- HERO SHIP -->
+  <div class="hero-ship" id="ship-slot" style="filter: drop-shadow(rgba(93, 217, 232, 0.6) 0px 0px 30px) drop-shadow(rgba(93, 217, 232, 0.333) 0px 0px 60px) drop-shadow(rgba(0, 0, 0, 0.9) 0px 20px 40px); width: 30%;">
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <lineargradient id="ship-hull-2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6e5c8c"></stop>
+                <stop offset="0.55" stop-color="#3a2f4a"></stop>
+                <stop offset="1" stop-color="#1d1828"></stop>
+              </lineargradient>
+              <radialgradient id="ship-engine-2" cx="0.2" cy="0.5" r="0.6">
+                <stop offset="0" stop-color="#5dd9e8" stop-opacity="0.95"></stop>
+                <stop offset="1" stop-color="#5dd9e8" stop-opacity="0"></stop>
+              </radialgradient>
+              <lineargradient id="ship-laser-2" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#5dd9e8" stop-opacity="0"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="0.7" stop-color="#fff"></stop>
+                <stop offset="1" stop-color="#5dd9e8" stop-opacity="0"></stop>
+              </lineargradient>
+            </defs>
+
+            
+            <g class="engine-glow">
+              <ellipse cx="20" cy="50" rx="42" ry="9" fill="url(#ship-engine-2)"></ellipse>
+              <ellipse cx="14" cy="50" rx="22" ry="4" fill="#fff" opacity="0.6"></ellipse>
+            </g>
+
+            
+            <path d="M 70,62 L 48,86 Q 70,80 100,72 Q 88,68 70,62 Z" fill="#2d2438" stroke="#0a070f" stroke-width="1"></path>
+            <path d="M 60,72 L 56,84 M 72,73 L 70,83 M 84,73 L 84,80" stroke="#9a8866" stroke-width="0.7" fill="none"></path>
+
+            
+            <path d="M 70,38 L 48,14 Q 70,20 100,28 Q 88,32 70,38 Z" fill="#3a2f4a" stroke="#0a070f" stroke-width="1"></path>
+            <path d="M 60,28 L 56,16 M 72,27 L 70,17 M 84,27 L 84,20" stroke="#9a8866" stroke-width="0.7" fill="none"></path>
+
+            
+            <path d="M 32,42 Q 60,30 110,36 Q 160,40 188,48 L 196,50 L 188,52 Q 160,60 110,64 Q 60,70 32,58 Z" fill="url(#ship-hull-2)" stroke="#0a070f" stroke-width="1"></path>
+
+            
+            <path d="M 50,40 Q 100,30 160,42" fill="none" stroke="#e6d8b8" stroke-width="1.4"></path>
+            <g stroke="#9a8866" stroke-width="0.8" fill="#e6d8b8">
+              <ellipse cx="62" cy="38" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="76" cy="35" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="92" cy="33" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="110" cy="33" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="128" cy="35" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="146" cy="38" rx="2" ry="1.4"></ellipse>
+            </g>
+
+            
+            <g stroke="#1d1828" stroke-width="0.8" fill="none" opacity="0.9">
+              <path d="M 60,42 Q 60,52 60,60"></path>
+              <path d="M 80,38 Q 80,52 80,64"></path>
+              <path d="M 100,36 Q 100,52 100,66"></path>
+              <path d="M 120,37 Q 120,52 120,66"></path>
+              <path d="M 140,40 Q 140,52 140,64"></path>
+              <path d="M 160,44 Q 160,52 160,60"></path>
+            </g>
+
+            
+            <ellipse class="cockpit" cx="158" cy="49" rx="9" ry="5" fill="#5dd9e8" opacity="0.95"></ellipse>
+            <ellipse cx="158" cy="49" rx="9" ry="5" fill="none" stroke="#e6d8b8" stroke-width="1"></ellipse>
+            <ellipse cx="160" cy="48" rx="3" ry="1.6" fill="#fff" opacity="0.9"></ellipse>
+
+            
+            <path d="M 196,50 L 175,46 L 175,54 Z" fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6"></path>
+            <path d="M 188,48 L 188,52" stroke="#9a8866" stroke-width="0.5"></path>
+
+            
+            <g>
+              <circle cx="36" cy="44" r="6.5" fill="#0a070f" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle cx="36" cy="44" r="3.2" fill="#5dd9e8"></circle>
+              <circle cx="36" cy="44" r="1.4" fill="#fff"></circle>
+              <circle cx="36" cy="56" r="6.5" fill="#0a070f" stroke="#e6d8b8" stroke-width="1"></circle>
+              <circle cx="36" cy="56" r="3.2" fill="#5dd9e8"></circle>
+              <circle cx="36" cy="56" r="1.4" fill="#fff"></circle>
+            </g>
+
+            
+            <rect x="128" y="62" width="22" height="4" fill="#1d1828" stroke="#e6d8b8" stroke-width="0.6"></rect>
+            <rect x="148" y="63" width="6" height="2" fill="#5dd9e8"></rect>
+
+            
+            <rect class="laser" x="195" y="49" width="40" height="2" fill="url(#ship-laser-2)"></rect>
+          </svg></div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <div class="eyebrow"><span class="bar"></span><span>SECTOR VII · BIOMECH WAR</span><span class="bar"></span></div>
+    <h1 class="title" id="title"><span id="title-a">CARRION</span> <span class="ix" id="title-b" style="color: rgb(168, 50, 50);">IX</span></h1>
+    <div class="subtitle" id="subtitle">MOTHER&nbsp;·&nbsp;OF&nbsp;·&nbsp;ENGINES</div>
+    <p class="tagline" id="tagline">In the bone-light of dead stars, the swarm remembers your name.<br>Fly the <em>Vespertine</em>. Burn the hive.</p>
+  </div>
+
+  <!-- corner marks -->
+  <div class="cornermark cm-tl">
+    <div><span class="live">●</span> SIGNAL TRACE / 04:21:09</div>
+    <div style="margin-top:4px; opacity:0.6;">ENC // BIOMECH-Δ</div>
+  </div>
+  <div class="cornermark cm-tr">
+    <div>SECTOR · VII</div>
+    <div style="margin-top:4px; opacity:0.6;">42°N · 119°W · DEEP</div>
+  </div>
+
+  <!-- rating + platforms -->
+  <div class="rating" style="display: none;">
+    <div class="badge">17+</div>
+    <div class="meta">SUGGESTIVE THEMES<br>BIOMECHANICAL HORROR</div>
+  </div>
+  <div class="platforms" style="display: none;">
+    PC&nbsp;·&nbsp;STEAM&nbsp;·&nbsp;SWITCH<br>
+    <span style="opacity:0.5;">CARRION-IX.ENG</span>
+  </div>
+
+  <!-- top FX layers -->
+  <div class="scan" style="display: block;"></div>
+  <div class="grain" style="display: block;"></div>
+  <div class="vignette"></div>
+
+</div>
+
+<!-- ── TWEAKS PANEL ─────────────────────────────────── -->
+<div id="tweaks" style="display:none; position:fixed; top:24px; right:24px; width:280px; max-height:calc(100vh - 48px); overflow-y:auto; background:#0d0a16; border:1px solid #3a2f4a; box-shadow:0 30px 80px rgba(0,0,0,0.7); z-index:9999; font-family:&#39;JetBrains Mono&#39;,monospace; color:#d8cfe6; font-size:11px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #3a2f4a; background:#1a1428;">
+    <span style="letter-spacing:0.2em; color:#e6d8b8;">TWEAKS</span>
+    <button id="tw-close" style="background:none; border:1px solid #3a2f4a; color:#8a7da0; width:22px; height:22px; cursor:pointer; font-family:inherit;">×</button>
+  </div>
+  <div style="padding:14px;" id="tw-body"></div>
+</div>
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "titleA": "CARRION",
+  "titleB": "IX",
+  "subtitle": "MOTHER · OF · ENGINES",
+  "tagline": "In the bone-light of dead stars, the swarm remembers your name.\nFly the Vespertine. Burn the hive.",
+  "eyebrow": "SECTOR VII · BIOMECH WAR",
+  "accent": "#a83232",
+  "shipGlow": "#5dd9e8",
+  "nebulaHue": "#e85dc9",
+  "shipScale": 30,
+  "bossScale": 88,
+  "showWasps": true,
+  "showStreaks": true,
+  "showScanlines": true,
+  "showGrain": true,
+  "showRating": false
+}/*EDITMODE-END*/;
+
+let TW = {...TWEAK_DEFAULTS};
+
+function applyTweaks() {
+  document.getElementById('title-a').textContent = TW.titleA;
+  document.getElementById('title-b').textContent = TW.titleB;
+  document.getElementById('subtitle').innerHTML = TW.subtitle.replace(/ /g, '&nbsp;');
+  document.getElementById('tagline').innerHTML = TW.tagline.split('\n').map(s => s.replace('Vespertine', '<em>Vespertine</em>')).join('<br/>');
+  document.querySelector('.eyebrow').innerHTML = `<span class="bar"></span><span>${TW.eyebrow}</span><span class="bar"></span>`;
+  document.querySelector('.title .ix').style.color = TW.accent;
+  document.querySelector('.hero-ship').style.filter = `drop-shadow(0 0 30px ${TW.shipGlow}99) drop-shadow(0 0 60px ${TW.shipGlow}55) drop-shadow(0 20px 40px rgba(0,0,0,0.9))`;
+  document.querySelector('.ship-trail').style.background = `linear-gradient(90deg, transparent, ${TW.shipGlow}00 0%, ${TW.shipGlow}80 60%, ${TW.shipGlow}e6 100%)`;
+  document.querySelector('.bg-nebula').style.background = `radial-gradient(ellipse 80% 60% at 50% 22%, ${TW.nebulaHue}73, transparent 60%), radial-gradient(ellipse 100% 80% at 50% 0%, ${TW.accent}59, transparent 55%), radial-gradient(ellipse 60% 40% at 30% 65%, rgba(93,217,232,0.18), transparent 60%), linear-gradient(180deg, #1a0820 0%, #0a0612 45%, #04030a 100%)`;
+  document.querySelector('.hero-ship').style.width = TW.shipScale + '%';
+  document.querySelector('.boss-wrap').style.width = TW.bossScale + '%';
+  ['wasp-1','wasp-2','wasp-3'].forEach(id => document.getElementById(id).style.display = TW.showWasps ? 'block' : 'none');
+  document.querySelector('.streaks').style.display = TW.showStreaks ? 'block' : 'none';
+  document.querySelector('.ship-trail').style.display = TW.showStreaks ? 'block' : 'none';
+  document.querySelector('.scan').style.display = TW.showScanlines ? 'block' : 'none';
+  document.querySelector('.grain').style.display = TW.showGrain ? 'block' : 'none';
+  document.querySelector('.rating').style.display = TW.showRating ? 'flex' : 'none';
+  document.querySelector('.platforms').style.display = TW.showRating ? 'block' : 'none';
+}
+
+function setTweak(k, v) {
+  TW[k] = v;
+  applyTweaks();
+  try { window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[k]:v}}, '*'); } catch(e){}
+}
+
+function buildPanel() {
+  const body = document.getElementById('tw-body');
+  const sec = (label) => `<div style="font-size:9px; letter-spacing:0.2em; color:#8a7da0; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px dashed #3a2f4a;">${label}</div>`;
+  const row = (label, ctrl) => `<div style="margin-bottom:10px;"><div style="font-size:10px; color:#9a8866; margin-bottom:4px;">${label}</div>${ctrl}</div>`;
+  const inputStyle = `width:100%; background:#1a1428; border:1px solid #3a2f4a; color:#d8cfe6; padding:6px 8px; font-family:inherit; font-size:11px; box-sizing:border-box;`;
+  const tareaStyle = inputStyle + `min-height:60px; resize:vertical;`;
+  body.innerHTML =
+    sec('TEXT') +
+    row('Eyebrow', `<input style="${inputStyle}" value="${TW.eyebrow}" data-k="eyebrow"/>`) +
+    row('Title (line A)', `<input style="${inputStyle}" value="${TW.titleA}" data-k="titleA"/>`) +
+    row('Title (accent word)', `<input style="${inputStyle}" value="${TW.titleB}" data-k="titleB"/>`) +
+    row('Subtitle', `<input style="${inputStyle}" value="${TW.subtitle}" data-k="subtitle"/>`) +
+    row('Tagline', `<textarea style="${tareaStyle}" data-k="tagline">${TW.tagline}</textarea>`) +
+    sec('COLORS') +
+    row('Accent (title IX)', `<div style="display:flex; gap:6px;">${['#a83232','#e85dc9','#5dd9e8','#a8e85d','#ff8a3d'].map(c=>`<button data-color="accent" data-v="${c}" style="width:32px; height:32px; border:${TW.accent===c?'2px solid #fff':'1px solid #3a2f4a'}; background:${c}; cursor:pointer;"></button>`).join('')}</div>`) +
+    row('Ship glow', `<div style="display:flex; gap:6px;">${['#5dd9e8','#a8e85d','#ff8a3d','#e85dc9','#fff'].map(c=>`<button data-color="shipGlow" data-v="${c}" style="width:32px; height:32px; border:${TW.shipGlow===c?'2px solid #fff':'1px solid #3a2f4a'}; background:${c}; cursor:pointer;"></button>`).join('')}</div>`) +
+    row('Nebula hue', `<div style="display:flex; gap:6px;">${['#e85dc9','#a83232','#5dd9e8','#a8e85d','#ff8a3d'].map(c=>`<button data-color="nebulaHue" data-v="${c}" style="width:32px; height:32px; border:${TW.nebulaHue===c?'2px solid #fff':'1px solid #3a2f4a'}; background:${c}; cursor:pointer;"></button>`).join('')}</div>`) +
+    sec('SCALE') +
+    row(`Ship size · ${TW.shipScale}%`, `<input type="range" min="15" max="55" value="${TW.shipScale}" data-k="shipScale" data-num="1" style="width:100%;"/>`) +
+    row(`Boss size · ${TW.bossScale}%`, `<input type="range" min="60" max="120" value="${TW.bossScale}" data-k="bossScale" data-num="1" style="width:100%;"/>`) +
+    sec('TOGGLES') +
+    row('', `<label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" ${TW.showWasps?'checked':''} data-k="showWasps" data-bool="1"/> Wasp swarm</label>`) +
+    row('', `<label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" ${TW.showStreaks?'checked':''} data-k="showStreaks" data-bool="1"/> Projectile streaks</label>`) +
+    row('', `<label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" ${TW.showScanlines?'checked':''} data-k="showScanlines" data-bool="1"/> Scanlines</label>`) +
+    row('', `<label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" ${TW.showGrain?'checked':''} data-k="showGrain" data-bool="1"/> Film grain</label>`) +
+    row('', `<label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" ${TW.showRating?'checked':''} data-k="showRating" data-bool="1"/> Rating + platforms</label>`);
+
+  body.querySelectorAll('input[data-k], textarea[data-k]').forEach(inp => {
+    const ev = inp.type === 'range' || inp.type === 'checkbox' ? 'input' : 'input';
+    inp.addEventListener(ev, e => {
+      const k = inp.dataset.k;
+      let v = inp.type === 'checkbox' ? inp.checked : inp.value;
+      if (inp.dataset.num) v = +v;
+      setTweak(k, v);
+      if (inp.type === 'range') buildPanel();
+    });
+  });
+  body.querySelectorAll('button[data-color]').forEach(btn => {
+    btn.addEventListener('click', () => { setTweak(btn.dataset.color, btn.dataset.v); buildPanel(); });
+  });
+}
+
+// Tweaks protocol
+window.addEventListener('message', e => {
+  if (!e.data || typeof e.data !== 'object') return;
+  if (e.data.type === '__activate_edit_mode') { document.getElementById('tweaks').style.display='block'; buildPanel(); }
+  if (e.data.type === '__deactivate_edit_mode') { document.getElementById('tweaks').style.display='none'; }
+});
+document.getElementById('tw-close').addEventListener('click', () => {
+  document.getElementById('tweaks').style.display='none';
+  try { window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); } catch(e){}
+});
+try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch(e){}
+
+applyTweaks();
+</script>
+
+<script>
+// Inline the SVG sprites so the SVG-internal gradients work and we can scale freely.
+const SLOTS = [
+  ['boss-slot',  'sprites/boss-stage1.svg'],
+  ['ship-slot',  'sprites/ship.svg'],
+  ['cyborg-l',   'sprites/enemy-cyborg.svg'],
+  ['cyborg-r',   'sprites/enemy-cyborg.svg'],
+  ['brain-r',    'sprites/enemy-brain.svg'],
+  ['mantis-l',   'sprites/enemy-mantis.svg'],
+  ['crystal-r',  'sprites/enemy-crystal.svg'],
+  ['wasp-1',     'sprites/enemy-wasp.svg'],
+  ['wasp-2',     'sprites/enemy-wasp.svg'],
+  ['wasp-3',     'sprites/enemy-wasp.svg'],
+];
+
+(async () => {
+  // de-dupe fetches; rename gradient/clip ids per-instance to avoid id collisions
+  const cache = new Map();
+  let counter = 0;
+  for (const [id, url] of SLOTS) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (!cache.has(url)) {
+      const r = await fetch(url);
+      const t = await r.text();
+      cache.set(url, t);
+    }
+    let svg = cache.get(url);
+    // rewrite ids so multiple copies don't fight
+    const inst = ++counter;
+    svg = svg.replace(/id="([^"]+)"/g, (m, n) => `id="${n}-${inst}"`)
+             .replace(/url\(#([^)]+)\)/g, (m, n) => `url(#${n}-${inst})`);
+    el.innerHTML = svg.replace(/<\?xml[^?]*\?>/, '');
+  }
+})();
+</script>
+</body></html>

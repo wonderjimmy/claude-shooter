@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pc-grad" cx="0.7" cy="0.5" r="0.3">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="1" stop-color="#5dd9e8" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <ellipse cx="56" cy="20" rx="22" ry="12" fill="url(#pc-grad)"></ellipse>
+            <circle cx="60" cy="20" r="8" fill="#fff"></circle>
+            <circle cx="60" cy="20" r="5" fill="#5dd9e8"></circle>
+            <path d="M 14,18 L 30,16 L 38,20 L 30,24 L 14,22 Z" fill="#5dd9e8" opacity="0.6"></path>
+          </svg>

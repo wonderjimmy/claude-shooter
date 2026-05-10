@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg">
+            
+            <path d="M 80,110 L 90,80 L 130,70 L 140,90 L 124,124 L 96,128 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.2"></path>
+            <path d="M 200,80 L 230,90 L 226,124 L 208,128 L 190,108 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.2"></path>
+            <path d="M 80,210 L 90,240 L 130,250 L 140,230 L 124,196 L 96,192 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.2"></path>
+            <path d="M 200,240 L 230,230 L 226,196 L 208,192 L 190,212 Z" fill="url(#boss-hull)" stroke="#0a070f" stroke-width="1.2"></path>
+
+            
+            <path d="M 96,128 Q 80,160 96,192 L 184,192 Q 200,160 184,128 Z" fill="#4a1414" stroke="#0a070f" stroke-width="1"></path>
+            
+            <g stroke="#a83232" stroke-width="1" fill="none">
+              <path d="M 100,135 Q 110,160 100,185"></path>
+              <path d="M 120,132 Q 130,160 120,188"></path>
+              <path d="M 160,132 Q 150,160 160,188"></path>
+              <path d="M 180,135 Q 170,160 180,185"></path>
+            </g>
+
+            
+            <g>
+              <path d="M 50,160 L 240,160" stroke="#e6d8b8" stroke-width="2" fill="none"></path>
+              <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.8">
+                <ellipse cx="60" cy="160" rx="6" ry="5"></ellipse>
+                <ellipse cx="78" cy="160" rx="6" ry="5"></ellipse>
+                <ellipse cx="96" cy="160" rx="6" ry="5"></ellipse>
+                <ellipse cx="222" cy="160" rx="6" ry="5"></ellipse>
+                <ellipse cx="204" cy="160" rx="6" ry="5"></ellipse>
+              </g>
+            </g>
+
+            
+            <circle cx="140" cy="160" r="44" fill="#0a070f"></circle>
+            <circle class="core" cx="140" cy="160" r="34" fill="url(#boss-core)"></circle>
+            <circle cx="140" cy="160" r="34" fill="none" stroke="#e6d8b8" stroke-width="1.5"></circle>
+            <circle cx="140" cy="160" r="12" fill="#fff"></circle>
+            
+            <g stroke="#e6d8b8" stroke-width="1.4" fill="none">
+              <path d="M 110,128 Q 140,118 170,128"></path>
+              <path d="M 110,192 Q 140,202 170,192"></path>
+            </g>
+            <g fill="#e6d8b8" stroke="#9a8866" stroke-width="0.6">
+              <ellipse cx="118" cy="125" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="140" cy="120" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="162" cy="125" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="118" cy="195" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="140" cy="200" rx="2" ry="1.4"></ellipse>
+              <ellipse cx="162" cy="195" rx="2" ry="1.4"></ellipse>
+            </g>
+
+            
+            <g stroke="#5dd9e8" stroke-width="1" fill="none" opacity="0.8">
+              <path d="M 96,128 L 92,118 L 100,114"></path>
+              <path d="M 184,128 L 188,116 L 180,114"></path>
+              <path d="M 96,192 L 88,200 L 96,206"></path>
+              <path d="M 184,192 L 192,200 L 184,206"></path>
+            </g>
+
+            
+            <circle class="turret-eye" cx="80" cy="160" r="5" fill="url(#boss-eye)"></circle>
+            <circle class="turret-eye" cx="200" cy="160" r="5" fill="url(#boss-eye)"></circle>
+            <circle cx="80" cy="160" r="1.4" fill="#fff"></circle>
+            <circle cx="200" cy="160" r="1.4" fill="#fff"></circle>
+          </svg>

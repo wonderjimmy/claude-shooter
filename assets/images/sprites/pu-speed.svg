@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-speed-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#a8e85d" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#a8e85d" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-speed-bg)"></circle>
+            <circle cx="30" cy="30" r="20" fill="#1d1828" stroke="#a8e85d" stroke-width="1.5"></circle>
+            <path d="M 18,30 L 32,18 L 26,30 L 36,30 L 22,42 L 28,30 Z" fill="#a8e85d" stroke="#fff" stroke-width="0.6"></path>
+          </svg>

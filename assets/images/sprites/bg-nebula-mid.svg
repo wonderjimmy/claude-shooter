@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="neb-1" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#e85dc9" stop-opacity="0.5"></stop><stop offset="1" stop-color="#e85dc9" stop-opacity="0"></stop></radialGradient>
+              <radialGradient id="neb-2" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#5dd9e8" stop-opacity="0.4"></stop><stop offset="1" stop-color="#5dd9e8" stop-opacity="0"></stop></radialGradient>
+              <radialGradient id="planet-1" cx="0.35" cy="0.35" r="0.55"><stop offset="0" stop-color="#a83232"></stop><stop offset="0.7" stop-color="#4a1414"></stop><stop offset="1" stop-color="#1d1828"></stop></radialGradient>
+            </defs>
+            <rect width="320" height="180" fill="transparent"></rect>
+            <ellipse cx="80" cy="60" rx="120" ry="50" fill="url(#neb-1)"></ellipse>
+            <ellipse cx="240" cy="120" rx="100" ry="40" fill="url(#neb-2)"></ellipse>
+            
+            <circle cx="220" cy="50" r="28" fill="url(#planet-1)"></circle>
+            <ellipse cx="220" cy="50" rx="40" ry="6" fill="none" stroke="#e6d8b8" stroke-width="0.8" opacity="0.6"></ellipse>
+            
+            <circle cx="60" cy="140" r="10" fill="#e6d8b8" opacity="0.7"></circle>
+            <circle cx="58" cy="138" r="7" fill="#9a8866" opacity="0.4"></circle>
+          </svg>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-life-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#a83232" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#a83232" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-life-bg)"></circle>
+            <circle cx="30" cy="30" r="20" fill="#1d1828" stroke="#a83232" stroke-width="1.5"></circle>
+            <path d="M 30,42 Q 18,32 18,24 Q 18,18 24,18 Q 28,18 30,22 Q 32,18 36,18 Q 42,18 42,24 Q 42,32 30,42 Z" fill="#a83232" stroke="#fff" stroke-width="0.8"></path>
+            <path d="M 26,24 L 34,24 M 30,20 L 30,28" stroke="#fff" stroke-width="1.2"></path>
+          </svg>

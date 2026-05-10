@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-multi-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#e6d8b8" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#e6d8b8" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-multi-bg)"></circle>
+            <circle cx="30" cy="30" r="20" fill="#1d1828" stroke="#e6d8b8" stroke-width="1.5"></circle>
+            <g fill="#e6d8b8">
+              <circle cx="22" cy="24" r="4"></circle>
+              <circle cx="38" cy="24" r="4"></circle>
+              <circle cx="30" cy="38" r="4"></circle>
+            </g>
+            <g stroke="#5dd9e8" stroke-width="0.8" fill="none" opacity="0.8">
+              <line x1="22" y1="24" x2="38" y2="24"></line>
+              <line x1="22" y1="24" x2="30" y2="38"></line>
+              <line x1="38" y1="24" x2="30" y2="38"></line>
+            </g>
+          </svg>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="transparent"></rect>
+            
+            <g fill="#3a2f4a" stroke="#0a070f" stroke-width="1">
+              <path d="M 30,40 L 50,32 L 60,46 L 54,60 L 36,58 L 26,48 Z"></path>
+              <path d="M 100,90 L 120,86 L 124,100 L 112,108 L 100,102 Z"></path>
+              <path d="M 200,30 L 224,28 L 230,42 L 220,52 L 204,46 Z"></path>
+              <path d="M 270,130 L 292,124 L 300,140 L 286,150 L 270,144 Z"></path>
+              <path d="M 60,140 L 80,134 L 86,148 L 76,158 L 62,154 Z"></path>
+              <path d="M 160,150 L 180,146 L 186,158 L 172,168 L 158,162 Z"></path>
+            </g>
+            
+            <g fill="#5e4e75" opacity="0.6">
+              <ellipse cx="42" cy="42" rx="6" ry="2"></ellipse>
+              <ellipse cx="110" cy="92" rx="5" ry="2"></ellipse>
+              <ellipse cx="212" cy="34" rx="6" ry="2"></ellipse>
+              <ellipse cx="282" cy="132" rx="6" ry="2"></ellipse>
+            </g>
+            
+            <g fill="#e6d8b8" opacity="0.7">
+              <circle cx="150" cy="60" r="2"></circle>
+              <circle cx="156" cy="62" r="1.4"></circle>
+              <circle cx="162" cy="60" r="1.4"></circle>
+              <path d="M 250,90 L 260,88 L 262,94 L 252,96 Z"></path>
+            </g>
+          </svg>

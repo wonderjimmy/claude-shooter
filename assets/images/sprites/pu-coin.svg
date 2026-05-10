@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pu-coin-bg" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#ff8a3d" stop-opacity="0.4"></stop>
+                <stop offset="1" stop-color="#ff8a3d" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#pu-coin-bg)"></circle>
+            <circle cx="30" cy="30" r="18" fill="#ff8a3d" stroke="#e6d8b8" stroke-width="1.5"></circle>
+            <circle cx="30" cy="30" r="14" fill="none" stroke="#e6d8b8" stroke-width="0.8"></circle>
+            <text x="30" y="36" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700" fill="#1d1828">¤</text>
+          </svg>

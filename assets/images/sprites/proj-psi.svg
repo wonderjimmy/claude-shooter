@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="psi-grad" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.3" stop-color="#e85dc9"></stop>
+                <stop offset="1" stop-color="#e85dc9" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <circle cx="30" cy="30" r="28" fill="url(#psi-grad)" opacity="0.8"></circle>
+            <circle cx="30" cy="30" r="10" fill="#fff"></circle>
+            <circle cx="30" cy="30" r="6" fill="#e85dc9"></circle>
+            <g stroke="#fff" stroke-width="1" fill="none" opacity="0.7">
+              <path d="M 30,8 Q 50,18 52,30 Q 50,42 30,52 Q 10,42 8,30 Q 10,18 30,8"></path>
+            </g>
+          </svg>

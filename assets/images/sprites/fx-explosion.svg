@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="ex-1" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff"></stop><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"></stop></radialGradient>
+              <radialGradient id="ex-2" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff"></stop><stop offset="0.4" stop-color="#ff8a3d"></stop><stop offset="1" stop-color="#a83232" stop-opacity="0"></stop></radialGradient>
+              <radialGradient id="ex-3" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="0.3" stop-color="#ff8a3d"></stop><stop offset="0.7" stop-color="#a83232"></stop><stop offset="1" stop-color="#4a1414" stop-opacity="0"></stop></radialGradient>
+            </defs>
+            
+            <g>
+              <circle cx="40" cy="40" r="6" fill="url(#ex-1)"></circle>
+              <g stroke="#fff" stroke-width="1">
+                <line x1="40" y1="30" x2="40" y2="22"></line>
+                <line x1="40" y1="50" x2="40" y2="58"></line>
+                <line x1="30" y1="40" x2="22" y2="40"></line>
+                <line x1="50" y1="40" x2="58" y2="40"></line>
+              </g>
+            </g>
+            
+            <g>
+              <circle cx="40" cy="40" r="16" fill="url(#ex-2)"></circle>
+              <g stroke="#fff" stroke-width="1">
+                <line x1="40" y1="22" x2="40" y2="14"></line>
+                <line x1="40" y1="58" x2="40" y2="66"></line>
+                <line x1="22" y1="40" x2="14" y2="40"></line>
+                <line x1="58" y1="40" x2="66" y2="40"></line>
+                <line x1="28" y1="28" x2="22" y2="22"></line>
+                <line x1="52" y1="52" x2="58" y2="58"></line>
+                <line x1="28" y1="52" x2="22" y2="58"></line>
+                <line x1="52" y1="28" x2="58" y2="22"></line>
+              </g>
+            </g>
+            
+            <g>
+              <circle cx="40" cy="40" r="28" fill="url(#ex-3)"></circle>
+              <circle cx="40" cy="40" r="10" fill="#fff"></circle>
+              <g stroke="#ff8a3d" stroke-width="2" fill="none">
+                <line x1="40" y1="14" x2="40" y2="6"></line>
+                <line x1="40" y1="66" x2="40" y2="74"></line>
+                <line x1="14" y1="40" x2="6" y2="40"></line>
+                <line x1="66" y1="40" x2="74" y2="40"></line>
+              </g>
+            </g>
+            
+            <g>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="url(#ex-3)" stroke-width="6"></circle>
+              <circle cx="40" cy="40" r="20" fill="url(#ex-2)" opacity="0.5"></circle>
+              <g fill="#ff8a3d">
+                <circle cx="20" cy="22" r="2"></circle>
+                <circle cx="60" cy="22" r="2"></circle>
+                <circle cx="20" cy="58" r="2"></circle>
+                <circle cx="60" cy="58" r="2"></circle>
+                <circle cx="14" cy="40" r="1.4"></circle>
+                <circle cx="66" cy="40" r="1.4"></circle>
+              </g>
+            </g>
+            
+            <g>
+              <circle cx="40" cy="40" r="36" fill="none" stroke="#a83232" stroke-width="2" opacity="0.5"></circle>
+              <g fill="#3a2f4a" opacity="0.7">
+                <circle cx="32" cy="34" r="8"></circle>
+                <circle cx="46" cy="36" r="7"></circle>
+                <circle cx="40" cy="46" r="9"></circle>
+                <circle cx="48" cy="44" r="5"></circle>
+              </g>
+              <circle cx="40" cy="40" r="6" fill="#ff8a3d" opacity="0.6"></circle>
+            </g>
+            
+            <g>
+              <g fill="#3a2f4a" opacity="0.4">
+                <circle cx="30" cy="36" r="6"></circle>
+                <circle cx="46" cy="38" r="5"></circle>
+                <circle cx="42" cy="48" r="6"></circle>
+              </g>
+            </g>
+          </svg>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="cr-core" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff"></stop>
+                <stop offset="0.4" stop-color="#5dd9e8"></stop>
+                <stop offset="1" stop-color="#1d2848" stop-opacity="0.2"></stop>
+              </radialGradient>
+              <linearGradient id="cr-shard" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#5dd9e8" stop-opacity="0.85"></stop>
+                <stop offset="1" stop-color="#3a2f4a"></stop>
+              </linearGradient>
+            </defs>
+
+            
+            <path d="M 50,80 Q 50,40 100,30 Q 156,40 154,86 Q 150,128 100,134 Q 50,128 50,80 Z" fill="#1d1828" stroke="#0a070f" stroke-width="1.2"></path>
+            
+            <g fill="#3a2f4a">
+              <ellipse cx="68" cy="56" rx="6" ry="3"></ellipse>
+              <ellipse cx="124" cy="64" rx="5" ry="2.5"></ellipse>
+              <ellipse cx="78" cy="106" rx="4" ry="2"></ellipse>
+              <ellipse cx="130" cy="114" rx="5" ry="2.5"></ellipse>
+            </g>
+
+            
+            <g class="shard">
+              <path d="M 100,30 L 86,4 L 96,28 L 92,2 L 102,28 L 110,6 L 108,28 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 150,86 L 178,80 L 158,90 L 184,94 L 156,96 L 178,108 L 154,98 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 50,86 L 24,76 L 44,90 L 18,98 L 46,96 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              <path d="M 100,134 L 86,158 L 96,136 L 100,156 L 104,136 L 116,158 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.7"></path>
+              
+              <path d="M 60,40 L 50,28 L 64,38 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.5"></path>
+              <path d="M 138,42 L 150,30 L 134,40 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.5"></path>
+              <path d="M 60,124 L 50,138 L 64,128 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.5"></path>
+            </g>
+
+            
+            <circle cx="100" cy="82" r="32" fill="#0a070f" stroke="#9a8866" stroke-width="0.6"></circle>
+            <g stroke="#9a8866" stroke-width="0.5" fill="none">
+              <circle cx="100" cy="82" r="28"></circle>
+              <path d="M 100,54 L 100,58 M 100,106 L 100,110 M 72,82 L 76,82 M 124,82 L 128,82"></path>
+            </g>
+
+            
+            <circle class="core" cx="100" cy="82" r="14" fill="url(#cr-core)"></circle>
+            <circle cx="100" cy="82" r="14" fill="none" stroke="#5dd9e8" stroke-width="0.8"></circle>
+            <circle cx="100" cy="82" r="5" fill="#fff"></circle>
+
+            
+            <g class="splinter-r">
+              <path d="M 30,82 L 12,76 L 4,82 L 12,88 Z" fill="url(#cr-shard)" stroke="#e6d8b8" stroke-width="0.5"></path>
+            </g>
+          </svg>
