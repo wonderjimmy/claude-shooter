@@ -37,17 +37,6 @@ const MUSIC = {
   victory: bgmVictoryUrl,
 } as const;
 
-/** Sample bytes from a URL, or straight from a data: URI (single-file builds, where fetch may be blocked). */
-async function loadBytes(url: string): Promise<ArrayBuffer> {
-  if (url.startsWith('data:')) {
-    const bin = atob(url.slice(url.indexOf(',') + 1));
-    const out = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-    return out.buffer;
-  }
-  return (await fetch(url)).arrayBuffer();
-}
-
 let silentUrl: string | null = null;
 /** 0.5 s of 8 kHz mono silence as a WAV blob URL. */
 function silentWavUrl(): string {
@@ -165,7 +154,7 @@ export class AudioSystem {
     if (!ctx) return;
     await Promise.all((Object.entries(SAMPLES) as Array<[SampleName, { url: string }]>).map(async ([name, s]) => {
       try {
-        const bytes = await loadBytes(s.url);
+        const bytes = await (await fetch(s.url)).arrayBuffer();
         const buf = await new Promise<AudioBuffer>((resolve, reject) => {
           // Callback form for older Safari.
           const p = ctx.decodeAudioData(bytes, resolve, reject);

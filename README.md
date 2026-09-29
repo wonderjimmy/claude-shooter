@@ -77,8 +77,6 @@ Dev helpers: open with `?debug` and press **1** invincible · **2** skip sector 
 
 `.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages on every push to `main`. One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
-`npm run build:artifact` produces `dist-artifact/carrion-ix.html`: the whole game (code, styles, music, SFX) in one ~8 MB self-contained page, for hosts that accept a single file such as a claude.ai Artifact. Fonts load from Google Fonts in that build.
-
 `dist/` is plain static files with relative paths, so it also works on Cloudflare Pages / Workers, Netlify, itch.io (upload a zip of `dist/`) or any web server.
 
 ## Why the rewrite (v0.2)

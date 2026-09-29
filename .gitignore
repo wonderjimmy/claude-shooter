@@ -7,4 +7,3 @@ dist-electron
 *.tsbuildinfo
 src-tauri/target
 src-tauri/gen/schemas
-dist-artifact
