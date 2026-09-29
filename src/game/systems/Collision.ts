@@ -28,17 +28,21 @@ export function collide(g: Game): void {
         break;
       }
     }
-    if (!struck) {
-      // The carcass itself is armour: shots that miss a weak point spark off it.
-      const a = boss.armor();
-      if (within(b.x, b.y, a.x, a.y, a.r)) {
-        g.fx.spark(b.x, b.y);
-        struck = true;
-      }
-    }
     if (struck) {
       if (b.hits) b.hits.add(boss);
       else b.dead = true;
+      continue;
+    }
+    // The carcass itself is armour: ordinary shots spark off it; piercing
+    // lance shots spark but keep going so they can still reach the eye.
+    const a = boss.armor();
+    if (within(b.x, b.y, a.x, a.y, a.r)) {
+      if (!b.hits) {
+        g.fx.spark(b.x, b.y);
+        b.dead = true;
+      } else if (Math.random() < 0.25) {
+        g.fx.spark(b.x, b.y);
+      }
     }
   }
 

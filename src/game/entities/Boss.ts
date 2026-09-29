@@ -126,10 +126,19 @@ export class Boss {
     return [{ id: 'core', x, y, r: this.stage === 3 ? 86 : 72 }];
   }
 
-  /** Solid carcass: absorbs shots that miss a weak point. */
+  /**
+   * Solid carcass: absorbs shots that miss a weak point. Once the shells open,
+   * it sits behind the eye so the eye's whole front face is exposed — shots
+   * arrive from the left, and an armour circle bulging past the eye would
+   * swallow them before they ever reached it.
+   */
   armor(): { x: number; y: number; r: number } {
-    const [x, y] = this.w(90, 0);
-    return { x, y, r: 185 };
+    if (this.stage === 1) {
+      const [x, y] = this.w(90, 0);
+      return { x, y, r: 185 };
+    }
+    const [x, y] = this.w(190, 0);
+    return { x, y, r: 150 };
   }
 
   rams(px: number, py: number, pr: number): boolean {
