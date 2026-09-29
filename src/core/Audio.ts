@@ -48,6 +48,23 @@ async function loadBytes(url: string): Promise<ArrayBuffer> {
   return (await fetch(url)).arrayBuffer();
 }
 
+let silentUrl: string | null = null;
+/** 0.5 s of 8 kHz mono silence as a WAV blob URL. */
+function silentWavUrl(): string {
+  if (silentUrl) return silentUrl;
+  const n = 4000;
+  const buf = new ArrayBuffer(44 + n);
+  const v = new DataView(buf);
+  const str = (o: number, s: string) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVE');
+  str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  str(36, 'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  silentUrl = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+  return silentUrl;
+}
+
 export type SampleName = keyof typeof SAMPLES;
 export type SynthName = 'pickup' | 'power' | 'graze' | 'bomb' | 'ui' | 'warn' | 'chain' | 'extend' | 'heartbeat' | 'ring';
 export type MusicName = keyof typeof MUSIC;
@@ -70,6 +87,8 @@ export class AudioSystem {
   private tracks = new Map<MusicName, Track>();
   private current: MusicName | null = null;
   private unlocked = false;
+  private primed = new Set<MusicName>();
+  private keepAlive: HTMLAudioElement | null = null;
   private noise: AudioBuffer | null = null;
 
   constructor() {
@@ -126,10 +145,17 @@ export class AudioSystem {
 
     this.loadSamples();
 
+    // iOS only honours touchend / click as a user activation for audio (not
+    // touchstart / pointerdown), so listen to all of them and keep retrying
+    // until the context is actually running.
     const unlock = () => this.unlock();
-    for (const ev of ['pointerdown', 'keydown', 'touchend', 'mousedown']) {
+    for (const ev of ['touchend', 'click', 'keydown', 'pointerup', 'mousedown', 'pointerdown']) {
       window.addEventListener(ev, unlock, { capture: true, passive: true });
     }
+    // Coming back from a phone call / another app leaves Safari 'interrupted'.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && ctx.state !== 'running') void ctx.resume().catch(() => {});
+    });
   }
 
   get available(): boolean { return this.ctx !== null; }
@@ -152,20 +178,71 @@ export class AudioSystem {
     }));
   }
 
-  /** Must run inside a user gesture at least once (autoplay policy, iOS). */
+  /**
+   * Call from inside a user gesture. Idempotent: every gesture retries whatever
+   * hasn't succeeded yet (context resume, media priming, the current track).
+   */
   unlock(): void {
     const ctx = this.ctx;
     if (!ctx) return;
-    if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
-    if (this.unlocked) return;
-    this.unlocked = true;
-    // Prime every <audio> inside the gesture so later play() calls outside a gesture succeed on iOS.
-    for (const [name, t] of this.tracks) {
-      if (name === this.current) continue;
-      const p = t.el.play();
-      if (p) p.then(() => { if (this.current !== name) t.el.pause(); }).catch(() => {});
+    this.ignoreSilentSwitch();
+    if (ctx.state !== 'running') {
+      // A buffer started synchronously inside the gesture is what un-sticks iOS.
+      try {
+        const src = ctx.createBufferSource();
+        src.buffer = ctx.createBuffer(1, 1, 22050);
+        src.connect(ctx.destination);
+        src.start(0);
+      } catch { /* ignore */ }
+      void ctx.resume().catch(() => {});
     }
-    if (this.current) this.startTrack(this.current, 600);
+    this.unlocked = true;
+    // Prime each <audio> inside a gesture so later play() calls outside one succeed on iOS.
+    for (const [name, t] of this.tracks) {
+      if (this.primed.has(name) || name === this.current) continue;
+      const p = t.el.play();
+      if (p) {
+        p.then(() => {
+          this.primed.add(name);
+          if (this.current !== name) t.el.pause();
+        }).catch(() => {});
+      }
+    }
+    if (this.current) {
+      const t = this.tracks.get(this.current);
+      if (t && t.el.paused) this.startTrack(this.current, 600);
+      else if (t) this.primed.add(this.current);
+    }
+  }
+
+  /**
+   * iPhone's ring/silent switch mutes Web Audio (and our BGM is routed through
+   * it). iOS 17+ lets a page declare itself as media playback; older iOS gets
+   * the same session category from a looping silent <audio> element.
+   */
+  private ignoreSilentSwitch(): void {
+    const nav = navigator as Navigator & { audioSession?: { type: string } };
+    if (nav.audioSession) {
+      try { if (nav.audioSession.type !== 'playback') nav.audioSession.type = 'playback'; } catch { /* read-only */ }
+      return;
+    }
+    const iOS = /iP(hone|ad|od)/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints ?? 0) > 1);
+    if (!iOS) return;
+    if (!this.keepAlive) {
+      const el = new Audio(silentWavUrl());
+      el.loop = true;
+      (el as HTMLAudioElement & { playsInline?: boolean }).playsInline = true;
+      this.keepAlive = el;
+    }
+    if (this.keepAlive.paused) void this.keepAlive.play().catch(() => {});
+  }
+
+  /** One-line status for the debug/FPS overlay. */
+  get debugState(): string {
+    const nav = navigator as Navigator & { audioSession?: { type: string } };
+    const t = this.current ? this.tracks.get(this.current) : null;
+    return `audio ${this.ctx?.state ?? 'none'} · session ${nav.audioSession?.type ?? (this.keepAlive ? 'keepalive' : '-')} · bgm ${this.current ?? '-'}${t ? (t.el.paused ? ' paused' : ' playing') : ''} · sfx ${this.buffers.size}`;
   }
 
   play(name: SampleName, opts: { volume?: number; rate?: number } = {}): void {

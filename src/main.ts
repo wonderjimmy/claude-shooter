@@ -114,7 +114,7 @@ async function boot(): Promise<void> {
     last = now;
     try {
       game.frame(elapsed / (1000 / 60));
-      game.render(settings.showFps ? fps : null, !lowDetail);
+      game.render(settings.showFps || game.debug ? fps : null, !lowDetail);
     } catch (err) {
       fatal(err);
       return;

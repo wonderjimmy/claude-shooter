@@ -187,6 +187,7 @@ export class Hud {
     if (fps !== null) {
       ctx.fillStyle = COLORS.boneDim;
       ctx.fillText(`${fps} FPS · ${g.fx.particleCount}p · ${g.enemyBullets.length}b`, STAGE.width - 26, STAGE.height - 36);
+      if (g.debug) ctx.fillText(g.audio.debugState, STAGE.width - 26, STAGE.height - 54);
     }
     ctx.globalAlpha = 1;
 
