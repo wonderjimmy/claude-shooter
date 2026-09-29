@@ -37,6 +37,17 @@ const MUSIC = {
   victory: bgmVictoryUrl,
 } as const;
 
+/** Sample bytes from a URL, or straight from a data: URI (single-file builds, where fetch may be blocked). */
+async function loadBytes(url: string): Promise<ArrayBuffer> {
+  if (url.startsWith('data:')) {
+    const bin = atob(url.slice(url.indexOf(',') + 1));
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out.buffer;
+  }
+  return (await fetch(url)).arrayBuffer();
+}
+
 export type SampleName = keyof typeof SAMPLES;
 export type SynthName = 'pickup' | 'power' | 'graze' | 'bomb' | 'ui' | 'warn' | 'chain' | 'extend' | 'heartbeat' | 'ring';
 export type MusicName = keyof typeof MUSIC;
@@ -128,8 +139,7 @@ export class AudioSystem {
     if (!ctx) return;
     await Promise.all((Object.entries(SAMPLES) as Array<[SampleName, { url: string }]>).map(async ([name, s]) => {
       try {
-        const res = await fetch(s.url);
-        const bytes = await res.arrayBuffer();
+        const bytes = await loadBytes(s.url);
         const buf = await new Promise<AudioBuffer>((resolve, reject) => {
           // Callback form for older Safari.
           const p = ctx.decodeAudioData(bytes, resolve, reject);

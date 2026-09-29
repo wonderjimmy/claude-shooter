@@ -14,7 +14,8 @@
     "electron:build": "npm run build && electron-builder --mac",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "build:artifact": "tsc -b && vite build --mode artifact && node scripts/build-artifact.mjs"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.1",
