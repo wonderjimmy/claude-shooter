@@ -20,8 +20,23 @@ export function collide(g: Game): void {
       else { b.dead = true; break; }
     }
     if (b.dead || !boss || boss.dead || boss.entering || (b.hits && b.hits.has(boss))) continue;
-    if (within(b.x, b.y, boss.x, boss.y, b.radius + boss.radius)) {
-      g.hitBoss(b.damage, b.x, b.y);
+    let struck = false;
+    for (const t of boss.targets()) {
+      if (within(b.x, b.y, t.x, t.y, b.radius + t.r)) {
+        g.hitBoss(t.id, b.damage, b.x, b.y);
+        struck = true;
+        break;
+      }
+    }
+    if (!struck) {
+      // The carcass itself is armour: shots that miss a weak point spark off it.
+      const a = boss.armor();
+      if (within(b.x, b.y, a.x, a.y, a.r)) {
+        g.fx.spark(b.x, b.y);
+        struck = true;
+      }
+    }
+    if (struck) {
       if (b.hits) b.hits.add(boss);
       else b.dead = true;
     }
@@ -67,7 +82,7 @@ export function collide(g: Game): void {
   }
 
   if (boss && !boss.dead && !boss.entering) {
-    if (within(p.x, p.y, boss.x, boss.y, PLAYER.bodyRadius + boss.radius * 0.8) || boss.laserHits(p.x, p.y, PLAYER.hitRadius)) {
+    if (boss.rams(p.x, p.y, PLAYER.bodyRadius) || boss.laserHits(p.x, p.y, PLAYER.hitRadius)) {
       g.hurtPlayer();
     }
   }

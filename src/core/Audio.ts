@@ -1,10 +1,17 @@
 // WebAudio mixer. SFX are decoded buffers (zero-latency, unlimited overlap);
 // BGM streams through <audio> elements routed into a GainNode so fades and
 // volume work on iOS, where HTMLMediaElement.volume is read-only.
+//
+// The BGM files in assets/audio/web/ are mastered for the game: loudness-
+// matched to -16 LUFS and baked into seamless loops (song tail cross-faded
+// into its head), so <audio loop> never hits a gap or an abrupt restart.
+// The music bus runs through a low-pass filter the game sweeps for mood:
+// muffled on the title and pause screens, a dip when you're hit, a tape-stop
+// pitch drop in slow motion.
 
 import bgmNormalUrl from '../../assets/audio/web/bgm-normal.mp3';
 import bgmBossUrl from '../../assets/audio/web/bgm-boss.mp3';
-import bgmVictoryUrl from '../../assets/audio/bgm-victory.mp3';
+import bgmVictoryUrl from '../../assets/audio/web/bgm-victory.mp3';
 import sfxShootUrl from '../../assets/audio/sfx-shoot.mp3';
 import sfxHitUrl from '../../assets/audio/sfx-hit.mp3';
 import sfxExplodeUrl from '../../assets/audio/sfx-explode.mp3';
@@ -31,7 +38,7 @@ const MUSIC = {
 } as const;
 
 export type SampleName = keyof typeof SAMPLES;
-export type SynthName = 'pickup' | 'power' | 'graze' | 'bomb' | 'ui' | 'warn' | 'chain' | 'extend';
+export type SynthName = 'pickup' | 'power' | 'graze' | 'bomb' | 'ui' | 'warn' | 'chain' | 'extend' | 'heartbeat' | 'ring';
 export type MusicName = keyof typeof MUSIC;
 
 export interface AudioSettings { master: number; music: number; sfx: number; muted: boolean }
@@ -39,13 +46,14 @@ export interface AudioSettings { master: number; music: number; sfx: number; mut
 interface Track { el: HTMLAudioElement; gain: GainNode | null; node: MediaElementAudioSourceNode | null }
 
 export class AudioSystem {
-  settings: AudioSettings = loadJson<AudioSettings>('audio2', { master: 0.8, music: 0.6, sfx: 0.9, muted: false });
+  settings: AudioSettings = loadJson<AudioSettings>('audio3', { master: 0.85, music: 0.8, sfx: 0.9, muted: false });
 
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private musicBus: GainNode | null = null;
   private sfxBus: GainNode | null = null;
   private duck: GainNode | null = null;
+  private tone: BiquadFilterNode | null = null;
   private buffers = new Map<SampleName, AudioBuffer>();
   private lastPlayed = new Map<string, number>();
   private tracks = new Map<MusicName, Track>();
@@ -70,7 +78,11 @@ export class AudioSystem {
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -10;
     comp.ratio.value = 6;
-    this.musicBus.connect(this.duck).connect(this.master);
+    this.tone = ctx.createBiquadFilter();
+    this.tone.type = 'lowpass';
+    this.tone.frequency.value = 20000;
+    this.tone.Q.value = 0.9;
+    this.musicBus.connect(this.tone).connect(this.duck).connect(this.master);
     this.sfxBus.connect(this.master);
     this.master.connect(comp).connect(ctx.destination);
     this.applyVolumes();
@@ -81,6 +93,11 @@ export class AudioSystem {
       el.preload = name === 'normal' ? 'auto' : 'none';
       el.crossOrigin = 'anonymous';
       (el as HTMLAudioElement & { playsInline?: boolean }).playsInline = true;
+      // Let playbackRate bend pitch (tape-stop effect in slow motion).
+      const pp = el as HTMLAudioElement & { preservesPitch?: boolean; webkitPreservesPitch?: boolean; mozPreservesPitch?: boolean };
+      pp.preservesPitch = false;
+      pp.webkitPreservesPitch = false;
+      pp.mozPreservesPitch = false;
       el.loop = name !== 'victory';
       let node: MediaElementAudioSourceNode | null = null;
       let gain: GainNode | null = null;
@@ -170,7 +187,7 @@ export class AudioSystem {
     const bus = this.sfxBus;
     if (!ctx || !bus || ctx.state !== 'running') return;
     const now = performance.now();
-    const gaps: Record<SynthName, number> = { pickup: 40, power: 80, graze: 55, bomb: 200, ui: 30, warn: 400, chain: 60, extend: 200 };
+    const gaps: Record<SynthName, number> = { pickup: 40, power: 80, graze: 55, bomb: 200, ui: 30, warn: 400, chain: 60, extend: 200, heartbeat: 300, ring: 400 };
     if (now - (this.lastPlayed.get(name) ?? -1e9) < gaps[name]) return;
     this.lastPlayed.set(name, now);
 
@@ -213,6 +230,13 @@ export class AudioSystem {
         for (let i = 0; i < 3; i++) {
           tone(440, i * 0.55, 0.45, 'sawtooth', 0.09, 880);
         }
+        break;
+      case 'heartbeat':
+        tone(62, 0, 0.16, 'sine', 0.5, 40);
+        tone(58, 0.2, 0.2, 'sine', 0.38, 36);
+        break;
+      case 'ring':
+        tone(3520, 0, 0.9, 'sine', 0.025);
         break;
       case 'bomb': {
         const src = ctx.createBufferSource();
@@ -288,6 +312,31 @@ export class AudioSystem {
     window.setTimeout(() => { if (this.current !== name) t.el.pause(); }, fadeMs + 50);
   }
 
+  /**
+   * Sweep the music low-pass. `hz` ≥ 18000 means fully open.
+   * Pass `thenHz` to bounce back after the sweep (hit / sector transitions).
+   */
+  muffle(hz: number, seconds = 0.4, thenHz?: number, holdSeconds = 0.15): void {
+    const ctx = this.ctx;
+    if (!ctx || !this.tone) return;
+    const f = this.tone.frequency;
+    const t = ctx.currentTime;
+    f.cancelScheduledValues(t);
+    f.setValueAtTime(Math.max(40, f.value), t);
+    f.exponentialRampToValueAtTime(Math.max(40, hz), t + Math.max(0.01, seconds));
+    if (thenHz !== undefined) {
+      f.setValueAtTime(Math.max(40, hz), t + seconds + holdSeconds);
+      f.exponentialRampToValueAtTime(Math.max(40, thenHz), t + seconds + holdSeconds + 0.9);
+    }
+  }
+
+  /** Playback rate of the current track (pitch follows — tape-stop / slow-mo). */
+  musicRate(rate: number): void {
+    for (const t of this.tracks.values()) {
+      try { t.el.playbackRate = rate; } catch { /* some browsers clamp */ }
+    }
+  }
+
   /** Lower the music while paused / in menus. */
   setDucked(ducked: boolean): void {
     const ctx = this.ctx;
@@ -300,7 +349,7 @@ export class AudioSystem {
 
   set(partial: Partial<AudioSettings>): void {
     this.settings = { ...this.settings, ...partial };
-    save('audio2', this.settings);
+    save('audio3', this.settings);
     this.applyVolumes();
   }
 

@@ -32,7 +32,10 @@ export class Hud {
     this.bannerState = { kicker, title, sub, color, t: 0, life };
   }
 
-  warning(): void { this.warningT = 200; }
+  warning(): void {
+    this.warningT = 200;
+    this.bannerState = null;
+  }
 
   update(dt: number): void {
     const g = this.game;
@@ -158,7 +161,8 @@ export class Hud {
       ctx.textAlign = 'right';
       ctx.font = `600 11px ${MONO}`;
       ctx.fillStyle = COLORS.boneDim;
-      ctx.fillText(`MOTHER OF ENGINES · PHASE ${boss.stage}/3`, x + w, y - 10);
+      const phaseName = ['CARAPACE', 'UNSEALED', 'HEART OF ENGINES'][boss.stage - 1];
+      ctx.fillText(`PHASE ${boss.stage}/3 · ${phaseName}`, x + w, y - 10);
       ctx.fillStyle = 'rgba(29,24,40,0.85)';
       ctx.fillRect(x, y, w, h);
       const grad = ctx.createLinearGradient(x, 0, x + w, 0);

@@ -27,7 +27,8 @@ src/
     Settings.ts      persisted settings + local leaderboard
     entities/        Player, Enemy (5 kinds × 4 motions, elites), Boss (3 phases), Bullet, Pickup
     systems/         Director (sectors → shuffled wave decks → elite → warning → boss), Collision
-    fx/              Fx (particles, explosions, rings, popups, sparks), Background + Scenery (procedural themes)
+    fx/              Fx (particles, explosions, rings, popups, sparks, debris), Background + Scenery (procedural themes)
+    art/             Sprites (canvas-drawn character parts + pivots), Rig (places parts in solid/glow/white passes)
     ui/              Hud (canvas), Menus (DOM screens: title, pause, settings, help, scores, results, rotate)
 ```
 
@@ -38,6 +39,9 @@ src/
 - Draw order: background → solid sprites → additive pass (glows, player bullets, particles) → enemy bullets on top (readability) → popups → post → HUD.
 - Sprites: add the SVG to `DEFS` in `core/Art.ts` with its draw scale; use `art('key')`. Colours for `dot()` / particles must be `#rrggbb`.
 - New tunable → `config.ts`. No per-frame allocations in hot loops beyond bullets/particles.
+- Characters are multi-part: draw a new part in `art/Sprites.ts` (`DRAWN` + `PIVOT` if it rotates on a joint), animate it in the entity's `rig()`. Don't bloom bone-coloured parts — glow only living bits (eyes, cores, muzzles).
+- Enemies telegraph every shot (muzzle glow for 22 frames). Keep that when adding patterns.
+- Music: edit masters in `assets/audio/*.mp3`, re-bake loops into `assets/audio/web/` (−16 LUFS, tail cross-faded into head). Mood goes through `audio.muffle()` / `audio.musicRate()`, not per-track hacks.
 - Background themes live in `fx/Scenery.ts` (`THEMES`); Director picks one per sector. Scenery bakes async — call `background.prepare()` early.
 
 ## Verify

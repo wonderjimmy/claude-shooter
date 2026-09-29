@@ -73,27 +73,28 @@ export class Renderer {
     }
   }
 
-  sprite(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1): void {
+  /** (px, py) is the pivot as an offset from the art's centre, in art units. */
+  sprite(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1, px = 0, py = 0): void {
     if (alpha <= 0) return;
     const ctx = this.ctx;
     this.place(x, y, rot, s);
     ctx.globalAlpha = alpha;
-    ctx.drawImage(a.img, -a.w / 2, -a.h / 2, a.w, a.h);
+    ctx.drawImage(a.img, -a.w / 2 - px, -a.h / 2 - py, a.w, a.h);
   }
 
   /** Must be called while composite = 'lighter'. */
-  glow(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1): void {
+  glow(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1, px = 0, py = 0): void {
     if (!a.glow || alpha <= 0) return;
     this.place(x, y, rot, s);
     this.ctx.globalAlpha = alpha;
-    this.ctx.drawImage(a.glow, -a.w / 2, -a.h / 2, a.w, a.h);
+    this.ctx.drawImage(a.glow, -a.w / 2 - px, -a.h / 2 - py, a.w, a.h);
   }
 
-  white(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1): void {
+  white(a: Art, x: number, y: number, rot = 0, s = 1, alpha = 1, px = 0, py = 0): void {
     if (!a.white || alpha <= 0) return;
     this.place(x, y, rot, s);
     this.ctx.globalAlpha = alpha;
-    this.ctx.drawImage(a.white, -a.w / 2, -a.h / 2, a.w, a.h);
+    this.ctx.drawImage(a.white, -a.w / 2 - px, -a.h / 2 - py, a.w, a.h);
   }
 
   /** Soft additive dot, radius in stage units. */

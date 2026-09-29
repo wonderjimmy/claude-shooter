@@ -9,6 +9,7 @@ import { STAGE } from './config';
 import { bakeArt } from './core/Art';
 import { AudioSystem } from './core/Audio';
 import { Input } from './core/Input';
+import { DRAWN_COUNT, bakeSprites } from './game/art/Sprites';
 import { Game } from './game/Game';
 import { settings } from './game/Settings';
 import { Menus } from './game/ui/Menus';
@@ -51,7 +52,10 @@ async function boot(): Promise<void> {
   const fit = Math.min(vw() / STAGE.width, vh() / STAGE.height);
   const bakeRatio = Math.max(1, Math.min(maxRatio(settings.quality === 'low'), fit * (window.devicePixelRatio || 1)));
   msg.textContent = 'rendering bone and sinew…';
-  await bakeArt(bakeRatio, (done, total) => { fill.style.width = `${(done / total) * 100}%`; });
+  await bakeArt(bakeRatio, (done, total) => { fill.style.width = `${(done / total) * 50}%`; });
+  msg.textContent = 'growing the swarm…';
+  let drawn = 0;
+  await bakeSprites(() => { drawn++; fill.style.width = `${50 + (drawn / DRAWN_COUNT) * 45}%`; });
 
   msg.textContent = 'seeding the nebula…';
   const input = new Input(stage);

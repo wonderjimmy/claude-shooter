@@ -174,6 +174,7 @@ export class Director {
         g.audio.synth('warn');
         g.audio.preloadMusic('boss');
         g.audio.music(null, 1500);
+        g.audio.muffle(380, 2.6);
         break;
       case 'boss':
         g.spawnBoss();

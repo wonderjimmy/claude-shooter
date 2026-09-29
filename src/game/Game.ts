@@ -4,7 +4,8 @@ import {
 } from '../config';
 import type { AudioSystem } from '../core/Audio';
 import type { Input } from '../core/Input';
-import { Boss } from './entities/Boss';
+import { Rig } from './art/Rig';
+import { Boss, type BossTarget } from './entities/Boss';
 import type { Bullet } from './entities/Bullet';
 import { Enemy, type EnemyKind, type EnemyOptions } from './entities/Enemy';
 import { DROP_TABLE, PICKUP_LABEL, Pickup, type PickupKind } from './entities/Pickup';
@@ -64,6 +65,7 @@ export class Game {
   readonly background = new Background();
   readonly shake = new Shake();
   readonly hud: Hud;
+  readonly rig: Rig;
   readonly player: Player;
   director: Director;
 
@@ -99,10 +101,12 @@ export class Game {
   private stats = { kills: 0, maxChain: 0, grazes: 0, bombsUsed: 0, hitsTaken: 0, startedAt: 0 };
   private autofireToggle = false;
   private resultSent = false;
+  private heartbeatT = 0;
 
   constructor(canvas: HTMLCanvasElement, readonly input: Input, readonly audio: AudioSystem, readonly events: GameEvents) {
     this.renderer = new Renderer(canvas);
     this.hud = new Hud(this);
+    this.rig = new Rig(this.renderer);
     this.player = new Player(this);
     this.director = new Director(this);
     this.debug = new URLSearchParams(location.search).has('debug');
@@ -169,6 +173,7 @@ export class Game {
       const skip = new URLSearchParams(location.search).get('skip');
       if (skip === 'boss') this.director.skipToBoss();
     }
+    this.audio.musicRate(1);
     this.audio.music('normal', 600);
     this.setState('playing');
   }
@@ -178,6 +183,11 @@ export class Game {
     this.state = s;
     this.input.enabled = s === 'playing';
     this.audio.setDucked(s === 'paused' || s === 'title');
+    // Music tone follows the mood: muffled in menus, wide open in play.
+    if (s === 'title') this.audio.muffle(900, 0.6);
+    else if (s === 'paused') this.audio.muffle(650, 0.25);
+    else if (s === 'playing') this.audio.muffle(20000, 1.2);
+    else if (s === 'over') this.audio.muffle(420, 1.6);
     this.events.onStateChange(s);
   }
 
@@ -200,6 +210,7 @@ export class Game {
     this.background.setTheme('husk');
     this.background.setWarp(1);
     this.timeScale = 1;
+    this.audio.musicRate(1);
     this.audio.music('normal', 800);
     this.setState('title');
   }
@@ -217,6 +228,7 @@ export class Game {
 
   spawnBoss(): void {
     this.boss = new Boss(this);
+    this.audio.muffle(20000, 0.4);
     this.audio.music('boss', 400);
     this.audio.play('bossRoar');
     this.shake.add(0.6);
@@ -305,6 +317,12 @@ export class Game {
     this.fx.emit(e.x, e.y, { count: big ? 70 : 34, speed: [2, big ? 11 : 8], life: [16, 36], size: [3, 7], color: '#ff9966' });
     this.fx.emit(e.x, e.y, { count: big ? 30 : 16, speed: [4, 11], life: [10, 20], size: [2, 4], color: e.sparkColor });
     this.fx.explosion(e.x, e.y, big ? 2.6 : 1.4);
+    const c = Math.cos(e.rotation), s = Math.sin(e.rotation);
+    for (const [key, lx, ly] of e.debris()) {
+      const dx = (lx * c - ly * s) * e.scale, dy = (lx * s + ly * c) * e.scale;
+      const len = Math.hypot(dx, dy) || 1;
+      this.fx.debris(key, e.x + dx, e.y + dy, dx / len * 3 - 1.5, dy / len * 3 - 1.5, { rot: e.rotation, s: e.scale, life: 45 });
+    }
     if (big) {
       this.fx.ring(e.x, e.y, '#ff6b6b', 16, 30, 12);
       this.hitstop = 5;
@@ -314,10 +332,10 @@ export class Game {
     this.audio.play('explode', { volume: big ? 1 : 0.7, rate: 0.9 + Math.random() * 0.25 });
   }
 
-  hitBoss(dmg: number, hx: number, hy: number): void {
+  hitBoss(id: BossTarget['id'], dmg: number, hx: number, hy: number): void {
     const boss = this.boss;
     if (!boss) return;
-    const res = boss.damage(dmg);
+    const res = boss.damage(id, dmg);
     if (res === 'none') {
       this.fx.spark(hx, hy);
       return;
@@ -326,6 +344,17 @@ export class Game {
       this.fx.emit(hx, hy, { count: 5, speed: [1.5, 5], life: [8, 16], size: [2, 5], color: '#ffaaaa' });
       this.audio.play('hit', { volume: 0.45, rate: 0.8 + Math.random() * 0.2 });
       this.score += 10;
+      return;
+    }
+    if (res === 'part') {
+      const [px, py] = boss.podPosition(id);
+      this.fx.emit(px, py, { count: 70, speed: [2, 11], life: [16, 36], size: [3, 7], color: '#5dd9e8' });
+      this.fx.explosion(px, py, 2.4);
+      this.fx.ring(px, py, '#5dd9e8', 16, 30, 12);
+      this.addScore(3000, px, py - 40, false);
+      this.shake.add(0.6);
+      this.hitstop = 6;
+      this.audio.play('bossExplode', { volume: 0.7, rate: 1.3 });
       return;
     }
     if (res === 'dead') this.onBossDeath(boss);
@@ -353,6 +382,7 @@ export class Game {
     this.shake.add(1);
     this.hitstop = 12;
     this.timeScale = 0.3;
+    this.audio.musicRate(0.55);
     this.audio.music(null, 1500);
     this.player.invuln = 99999;
     this.setState('victory');
@@ -380,6 +410,7 @@ export class Game {
       this.timeScale = 1;
     });
     this.after(150, () => {
+      this.audio.musicRate(1);
       this.audio.music('victory', 300);
       this.background.setTheme('dawn');
       this.background.setWarp(3);
@@ -463,7 +494,7 @@ export class Game {
     this.audio.synth('bomb');
     this.audio.play('explode', { rate: 0.6 });
     for (const e of this.enemies) if (!e.dead) this.hitEnemy(e, 6, e.x, e.y);
-    if (this.boss) this.hitBoss(8, this.boss.x, this.boss.y);
+    if (this.boss) for (const t of this.boss.targets()) this.hitBoss(t.id, 6, t.x, t.y);
   }
 
   hurtPlayer(): void {
@@ -492,6 +523,8 @@ export class Game {
     this.shake.add(0.55);
     this.hitstop = 6;
     this.audio.play('damage');
+    this.audio.muffle(650, 0.04, 20000, 0.25);
+    this.audio.synth('ring');
     if (this.hp <= 0) this.playerDeath();
   }
 
@@ -505,6 +538,7 @@ export class Game {
     this.shake.add(1);
     this.hitstop = 10;
     this.timeScale = 0.4;
+    this.audio.musicRate(0.6);
     this.audio.music(null, 1200);
     this.audio.play('bossExplode', { volume: 0.7, rate: 1.2 });
     this.setState('over');
@@ -518,6 +552,7 @@ export class Game {
     this.hud.banner('SECTOR CLEAR', `+${bonus.toLocaleString()}`, 'hull integrity holding', COLORS.gold, 150);
     this.background.setWarp(3);
     this.audio.synth('extend');
+    this.audio.muffle(1400, 0.35, 20000, 0.9);
   }
 
   private finish(won: boolean): void {
@@ -641,6 +676,14 @@ export class Game {
     }
 
     if (this.state === 'playing') this.director.update(dt);
+    // Last hull: a heartbeat under the music.
+    if (this.state === 'playing' && this.hp === 1 && this.player.alive) {
+      this.heartbeatT -= dt;
+      if (this.heartbeatT <= 0) {
+        this.heartbeatT = 52;
+        this.audio.synth('heartbeat');
+      }
+    }
     if (this.chainTimer > 0) {
       this.chainTimer -= dt;
       if (this.chainTimer <= 0) this.chain = 0;
@@ -677,16 +720,16 @@ export class Game {
     // Solid pass.
     ctx.globalCompositeOperation = 'source-over';
     for (const p of this.pickups) p.draw(r);
-    for (const e of this.enemies) e.draw(r);
-    this.boss?.draw(r);
+    this.boss?.draw(r, this.rig);
+    for (const e of this.enemies) e.draw(r, this.rig);
+    this.fx.drawDebris(r);
     this.player.draw(r);
 
     // Additive pass: bloom, bullets, particles.
     r.additive(true);
     for (const p of this.pickups) p.drawGlow(r);
-    if (glowOnEnemies) for (const e of this.enemies) e.drawGlow(r, 0.5);
-    else for (const e of this.enemies) if (e.elite) e.drawGlow(r, 0.4);
-    this.boss?.drawGlow(r);
+    for (const e of this.enemies) e.drawGlow(r, this.rig, glowOnEnemies ? 0.5 : 0);
+    this.boss?.drawGlow(r, this.rig);
     this.player.drawGlow(r);
     for (const b of this.playerBullets) { b.drawGlow(r, 0.7); b.draw(r); }
     this.fx.drawAdditive(r);

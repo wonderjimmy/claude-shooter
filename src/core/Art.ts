@@ -4,15 +4,6 @@
 // is fast and identical on every browser — no WebGL, no shader compilation,
 // no eval, so SES-locked pages, Firefox, Safari and phones all behave the same.
 
-import shipSvg from '../../assets/images/sprites/ship.svg?raw';
-import enemyCyborgSvg from '../../assets/images/sprites/enemy-cyborg.svg?raw';
-import enemyBrainSvg from '../../assets/images/sprites/enemy-brain.svg?raw';
-import enemyWaspSvg from '../../assets/images/sprites/enemy-wasp.svg?raw';
-import enemyMantisSvg from '../../assets/images/sprites/enemy-mantis.svg?raw';
-import enemyCrystalSvg from '../../assets/images/sprites/enemy-crystal.svg?raw';
-import bossStage1Svg from '../../assets/images/sprites/boss-stage1.svg?raw';
-import bossStage2Svg from '../../assets/images/sprites/boss-stage2.svg?raw';
-import bossStage3Svg from '../../assets/images/sprites/boss-stage3.svg?raw';
 import projPulseSvg from '../../assets/images/sprites/proj-pulse.svg?raw';
 import projChargeSvg from '../../assets/images/sprites/proj-charge.svg?raw';
 import projBoneShardSvg from '../../assets/images/sprites/proj-bone-shard.svg?raw';
@@ -31,6 +22,8 @@ import puLaserSvg from '../../assets/images/sprites/pu-laser.svg?raw';
 import puCoinSvg from '../../assets/images/sprites/pu-coin.svg?raw';
 import fxExplosionSvg from '../../assets/images/sprites/fx-explosion.svg?raw';
 import fxHitSvg from '../../assets/images/sprites/fx-hit.svg?raw';
+
+import type { DrawnKey } from '../game/art/Sprites';
 
 export interface Art {
   /** Full-resolution bitmap, including `pad` on every side. */
@@ -55,18 +48,7 @@ interface SvgDef {
   grade?: boolean;
 }
 
-const ENEMY_BAKE = 1.35;
-
 const DEFS = {
-  ship:          { svg: shipSvg, scale: 0.55, glow: true, white: true },
-  enemyCyborg:   { svg: enemyCyborgSvg, scale: 0.55, glow: true, white: true, bakeMul: ENEMY_BAKE },
-  enemyBrain:    { svg: enemyBrainSvg, scale: 0.55, glow: true, white: true, bakeMul: ENEMY_BAKE },
-  enemyWasp:     { svg: enemyWaspSvg, scale: 0.45, glow: true, white: true, bakeMul: ENEMY_BAKE },
-  enemyMantis:   { svg: enemyMantisSvg, scale: 0.55, glow: true, white: true, bakeMul: ENEMY_BAKE },
-  enemyCrystal:  { svg: enemyCrystalSvg, scale: 0.55, glow: true, white: true, bakeMul: ENEMY_BAKE },
-  bossStage1:    { svg: bossStage1Svg, scale: 1.6, glow: true, white: true },
-  bossStage2:    { svg: bossStage2Svg, scale: 1.9, glow: true, white: true },
-  bossStage3:    { svg: bossStage3Svg, scale: 2.1, glow: true, white: true },
   projPulse:     { svg: projPulseSvg, scale: 0.5, glow: true },
   projCharge:    { svg: projChargeSvg, scale: 0.85, glow: true, tint: '#fff2a8' },
   projBoneShard: { svg: projBoneShardSvg, scale: 0.4, glow: true },
@@ -89,7 +71,7 @@ const DEFS = {
 } satisfies Record<string, SvgDef>;
 
 export type SvgKey = keyof typeof DEFS;
-export type ArtKey = SvgKey | 'puPower' | 'gem';
+export type ArtKey = SvgKey | 'puPower' | 'gem' | DrawnKey;
 
 const arts = new Map<ArtKey, Art>();
 let pixelRatio = 1;
@@ -248,7 +230,30 @@ async function bakeSvg(def: SvgDef): Promise<Art> {
   };
 }
 
-// ── procedural art (no SVG in the pack for these) ──────────────────────────
+// ── procedural art ─────────────────────────────────────────────────────────
+
+export interface DrawnOptions { glow?: boolean; white?: boolean; bakeMul?: number }
+
+/** Bake a canvas-drawn sprite of logical size w×h (drawn in logical units). */
+export function bakeDrawn(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => void, o: DrawnOptions = {}): Art {
+  const res = pixelRatio * (o.bakeMul ?? 1);
+  const pad = o.glow ? 12 : 2;
+  const [c, ctx] = makeCanvas((w + pad * 2) * res, (h + pad * 2) * res);
+  ctx.scale(res, res);
+  ctx.translate(pad, pad);
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  draw(ctx);
+  return {
+    img: c,
+    glow: o.glow ? makeGlow(c, 10 * res) : null,
+    white: o.white ? makeWhite(c) : null,
+    w: w + pad * 2,
+    h: h + pad * 2,
+  };
+}
+
+export function registerArt(key: ArtKey, a: Art): void { arts.set(key, a); }
 
 function bakeProcedural(size: number, draw: (ctx: CanvasRenderingContext2D, s: number) => void): Art {
   const res = pixelRatio;

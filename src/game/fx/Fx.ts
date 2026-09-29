@@ -1,4 +1,4 @@
-import { art } from '../../core/Art';
+import { art, type ArtKey } from '../../core/Art';
 import type { Renderer } from '../Renderer';
 
 export interface EmitOptions {
@@ -22,6 +22,7 @@ interface Explosion { x: number; y: number; scale: number; life: number; maxLife
 interface Ring { x: number; y: number; r: number; speed: number; life: number; maxLife: number; color: string; width: number }
 interface Popup { x: number; y: number; text: string; life: number; maxLife: number; color: string; size: number }
 interface Spark { x: number; y: number; life: number; rot: number; s: number }
+interface Debris { key: ArtKey; x: number; y: number; vx: number; vy: number; rot: number; spin: number; s: number; life: number; maxLife: number; smoke: number }
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -34,6 +35,7 @@ export class Fx {
   private rings: Ring[] = [];
   private popups: Popup[] = [];
   private sparks: Spark[] = [];
+  private debrisList: Debris[] = [];
 
   emit(x: number, y: number, o: EmitOptions): void {
     const budget = this.maxParticles - this.particles.length;
@@ -68,6 +70,13 @@ export class Fx {
     this.popups.push({ x, y, text, life: 55, maxLife: 55, color, size });
   }
 
+  /** A broken-off character part tumbling away, trailing smoke. */
+  debris(key: ArtKey, x: number, y: number, vx: number, vy: number, opts: { rot?: number; spin?: number; s?: number; life?: number } = {}): void {
+    if (this.debrisList.length > 60) this.debrisList.shift();
+    const life = opts.life ?? 60;
+    this.debrisList.push({ key, x, y, vx, vy, rot: opts.rot ?? 0, spin: opts.spin ?? rand(-0.15, 0.15), s: opts.s ?? 1, life, maxLife: life, smoke: 0 });
+  }
+
   spark(x: number, y: number): void {
     if (this.sparks.length > 30) return;
     this.sparks.push({ x, y, life: 10, rot: Math.random() * Math.PI, s: rand(0.6, 1) });
@@ -80,6 +89,7 @@ export class Fx {
     this.rings.length = 0;
     this.popups.length = 0;
     this.sparks.length = 0;
+    this.debrisList.length = 0;
   }
 
   update(dt: number): void {
@@ -102,6 +112,29 @@ export class Fx {
     this.rings = this.rings.filter((r) => { r.life -= dt; r.r += r.speed * dt; r.speed *= Math.pow(0.95, dt); return r.life > 0; });
     this.popups = this.popups.filter((p) => { p.life -= dt; p.y -= 0.7 * dt; return p.life > 0; });
     this.sparks = this.sparks.filter((s) => { s.life -= dt; return s.life > 0; });
+    this.debrisList = this.debrisList.filter((d) => {
+      d.life -= dt;
+      d.vy += 0.12 * dt;
+      d.x += d.vx * dt;
+      d.y += d.vy * dt;
+      d.rot += d.spin * dt;
+      d.smoke -= dt;
+      if (d.smoke <= 0 && d.life > 10) {
+        d.smoke = 3;
+        this.emit(d.x, d.y, { count: 1, speed: [0.2, 0.8], life: [14, 26], size: [3, 6], color: '#ff8a3d' });
+      }
+      return d.life > 0;
+    });
+  }
+
+  /** Tumbling parts — normal composite, drawn with the solid pass. */
+  drawDebris(r: Renderer): void {
+    for (const d of this.debrisList) {
+      const t = d.life / d.maxLife;
+      const a = art(d.key);
+      r.sprite(a, d.x, d.y, d.rot, d.s, Math.min(1, t * 2));
+      r.white(a, d.x, d.y, d.rot, d.s, Math.max(0, 1 - (d.maxLife - d.life) / 8) * 0.8);
+    }
   }
 
   /** Draw with composite already set to 'lighter'. */
