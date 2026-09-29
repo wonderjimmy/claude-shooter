@@ -2,15 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Claude Shooter</title>
-    <style>
-      html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
-      body { display: flex; align-items: center; justify-content: center; }
-      canvas { display: block; image-rendering: pixelated; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Carrion IX — a bio-mechanical shoot-'em-up</title>
+    <meta name="description" content="Fly the Vespertine through three sectors of the hive and burn Carrion IX, Mother of Engines. Free, instant, runs in any browser — keyboard, touch or gamepad." />
+    <meta name="theme-color" content="#04030a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Carrion IX" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CARRION IX — Mother of Engines" />
+    <meta property="og:description" content="In the bone-light of dead stars, the swarm remembers your name. Fly the Vespertine. Burn the hive." />
+    <meta property="og:image" content="og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>
+    <div id="stage">
+      <canvas id="game" aria-label="Carrion IX game canvas"></canvas>
+    </div>
+
+    <div id="touch-ui" hidden>
+      <button id="btn-pause" class="touch-btn" aria-label="Pause">❚❚</button>
+      <button id="btn-bomb" class="touch-btn bomb" aria-label="Bomb"><span>✹</span><small>BOMB</small></button>
+    </div>
+
+    <div id="screens"></div>
+
+    <div id="boot">
+      <div class="boot-inner">
+        <div class="boot-kicker">CARRION-IX.ENG</div>
+        <div class="boot-title">CARRION IX</div>
+        <div class="boot-bar"><div id="boot-fill"></div></div>
+        <div id="boot-msg">growing the hive…</div>
+      </div>
+    </div>
+
+    <noscript>Carrion IX needs JavaScript to run.</noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

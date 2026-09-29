@@ -1,235 +1,304 @@
-import { Container, Graphics, Text } from 'pixi.js';
-import { STAGE } from '../../config';
+import { CHAIN, COLORS, PLAYER, POWERUP_FRAMES, STAGE } from '../../config';
+import { art } from '../../core/Art';
+import type { Game, TimedPower } from '../Game';
+import { PICKUP_ART } from '../entities/Pickup';
+import type { Renderer } from '../Renderer';
+
+const MONO = '"JetBrains Mono", ui-monospace, Menlo, monospace';
+const DISPLAY = '"Space Grotesk", system-ui, sans-serif';
+
+interface Banner { kicker: string; title: string; sub: string; color: string; t: number; life: number }
+
+const TIMED: TimedPower[] = ['shield', 'spread', 'speed', 'multi', 'laser'];
 
 export class Hud {
-  readonly view = new Container();
-  private scoreText: Text;
-  private hpBar: Graphics;
-  private hpBg: Graphics;
-  private bossBar: Graphics;
-  private bossBg: Graphics;
-  private bossLabel: Text;
-  private gameOverText: Text;
-  private winText: Text;
-  private hintText: Text;
-  private modeBadge: Text;
+  private bannerState: Banner | null = null;
+  private warningT = 0;
+  private displayScore = 0;
+  private hpShake = 0;
+  private lastHp = 0;
+  hintT = 0;
 
-  private maxHp = 1;
-  private hp = 1;
-  private bossHp = 1;
-  private bossMaxHp = 1;
+  constructor(private game: Game) {}
 
-  constructor() {
-    this.scoreText = new Text({
-      text: 'SCORE  0',
-      style: {
-        fill: 0x9be7ff,
-        fontSize: 22,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        fontWeight: '700',
-        letterSpacing: 2,
-        dropShadow: { color: 0x5dd9e8, blur: 6, distance: 0, alpha: 0.7 },
-      },
-    });
-    this.scoreText.x = 24;
-    this.scoreText.y = 18;
-
-    this.hpBg = new Graphics();
-    this.hpBar = new Graphics();
-    this.hpBg.x = STAGE.width - 224;
-    this.hpBg.y = 22;
-    this.hpBar.x = STAGE.width - 224;
-    this.hpBar.y = 22;
-
-    this.bossBg = new Graphics();
-    this.bossBar = new Graphics();
-    this.bossBg.x = STAGE.width / 2 - 360;
-    this.bossBg.y = STAGE.height - 48;
-    this.bossBar.x = STAGE.width / 2 - 360;
-    this.bossBar.y = STAGE.height - 48;
-    this.bossBg.visible = false;
-    this.bossBar.visible = false;
-
-    this.bossLabel = new Text({
-      text: 'CARRION IX',
-      style: {
-        fill: 0xff6b6b,
-        fontSize: 16,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        fontWeight: '900',
-        letterSpacing: 4,
-        dropShadow: { color: 0xff6b6b, blur: 6, distance: 0, alpha: 0.8 },
-      },
-    });
-    this.bossLabel.x = STAGE.width / 2 - 360;
-    this.bossLabel.y = STAGE.height - 70;
-    this.bossLabel.visible = false;
-
-    this.gameOverText = new Text({
-      text: 'GAME OVER',
-      style: {
-        fill: 0xff6b6b,
-        fontSize: 64,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        fontWeight: '900',
-        letterSpacing: 6,
-        dropShadow: { color: 0xff6b6b, blur: 12, distance: 0, alpha: 0.9 },
-      },
-    });
-    this.gameOverText.anchor.set(0.5);
-    this.gameOverText.x = STAGE.width / 2;
-    this.gameOverText.y = STAGE.height / 2 - 24;
-    this.gameOverText.visible = false;
-
-    this.winText = new Text({
-      text: 'VICTORY',
-      style: {
-        fill: 0xffe066,
-        fontSize: 80,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        fontWeight: '900',
-        letterSpacing: 10,
-        dropShadow: { color: 0x5dd9e8, blur: 16, distance: 0, alpha: 0.9 },
-      },
-    });
-    this.winText.anchor.set(0.5);
-    this.winText.x = STAGE.width / 2;
-    this.winText.y = STAGE.height / 2 - 24;
-    this.winText.visible = false;
-
-    this.hintText = new Text({
-      text: 'press R to restart',
-      style: {
-        fill: 0xe6d8b8,
-        fontSize: 18,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        letterSpacing: 3,
-      },
-    });
-    this.hintText.anchor.set(0.5);
-    this.hintText.x = STAGE.width / 2;
-    this.hintText.y = STAGE.height / 2 + 36;
-    this.hintText.visible = false;
-
-    this.modeBadge = new Text({
-      text: 'NORMAL  [H]',
-      style: {
-        fill: 0x9be7ff,
-        fontSize: 13,
-        fontFamily: 'Menlo, "Courier New", monospace',
-        fontWeight: '700',
-        letterSpacing: 2,
-      },
-    });
-    this.modeBadge.x = 24;
-    this.modeBadge.y = STAGE.height - 30;
-    this.modeBadge.alpha = 0.7;
-
-    this.view.addChild(
-      this.scoreText, this.hpBg, this.hpBar,
-      this.bossBg, this.bossBar, this.bossLabel,
-      this.modeBadge,
-      this.gameOverText, this.winText, this.hintText,
-    );
+  reset(): void {
+    this.bannerState = null;
+    this.warningT = 0;
+    this.displayScore = 0;
+    this.lastHp = this.game.hp;
   }
 
-  setDifficulty(d: 'normal' | 'hard'): void {
-    if (d === 'hard') {
-      this.modeBadge.text = 'HARD  [H]';
-      this.modeBadge.style.fill = 0xff6b6b;
-    } else {
-      this.modeBadge.text = 'NORMAL  [H]';
-      this.modeBadge.style.fill = 0x9be7ff;
+  banner(kicker: string, title: string, sub: string, color: string, life = 170): void {
+    this.bannerState = { kicker, title, sub, color, t: 0, life };
+  }
+
+  warning(): void { this.warningT = 200; }
+
+  update(dt: number): void {
+    const g = this.game;
+    if (this.bannerState) {
+      this.bannerState.t += dt;
+      if (this.bannerState.t > this.bannerState.life) this.bannerState = null;
     }
+    if (this.warningT > 0) this.warningT -= dt;
+    if (this.hintT > 0) this.hintT -= dt;
+    const diff = g.score - this.displayScore;
+    this.displayScore += diff > 0 ? Math.max(1, Math.ceil(diff * 0.2 * dt)) : diff;
+    if (this.displayScore > g.score) this.displayScore = g.score;
+    if (g.hp < this.lastHp) this.hpShake = 18;
+    this.lastHp = g.hp;
+    if (this.hpShake > 0) this.hpShake -= dt;
   }
 
-  setScore(score: number): void {
-    this.scoreText.text = `SCORE  ${score.toString().padStart(6, '0')}`;
-  }
+  draw(r: Renderer, fps: number | null): void {
+    const g = this.game;
+    const ctx = r.ctx;
+    r.hudTransform();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.textBaseline = 'alphabetic';
 
-  setHp(hp: number, maxHp: number): void {
-    this.hp = Math.max(0, hp);
-    this.maxHp = Math.max(1, maxHp);
-    this.redrawHp();
-  }
+    // ── score (top-left) ──
+    ctx.textAlign = 'left';
+    ctx.font = `700 26px ${MONO}`;
+    ctx.fillStyle = COLORS.ice;
+    ctx.shadowColor = COLORS.cyan;
+    ctx.shadowBlur = 10;
+    ctx.fillText(this.displayScore.toString().padStart(8, '0'), 26, 44);
+    ctx.shadowBlur = 0;
+    ctx.font = `500 12px ${MONO}`;
+    ctx.fillStyle = COLORS.boneDim;
+    ctx.fillText(`HI ${Math.max(g.best, g.score).toString().padStart(8, '0')}`, 28, 64);
 
-  setBossHp(hp: number, maxHp: number): void {
-    this.bossHp = Math.max(0, hp);
-    this.bossMaxHp = Math.max(1, maxHp);
-    this.redrawBossHp();
-  }
-
-  showBoss(visible: boolean): void {
-    this.bossBg.visible = visible;
-    this.bossBar.visible = visible;
-    this.bossLabel.visible = visible;
-  }
-
-  showGameOver(visible: boolean): void {
-    this.gameOverText.visible = visible;
-    this.hintText.visible = visible || this.winText.visible;
-  }
-
-  showWin(visible: boolean): void {
-    this.winText.visible = visible;
-    this.winText.alpha = 1;
-    this.winText.scale.set(1);
-    this.hintText.visible = visible || this.gameOverText.visible;
-    this.hintText.alpha = 1;
-  }
-
-  beginWinAnimation(): void {
-    this.winText.alpha = 0;
-    this.winText.scale.set(0.5);
-    this.winText.visible = true;
-    this.hintText.alpha = 0;
-    this.hintText.visible = true;
-  }
-
-  tickWinAnimation(t: number): void {
-    const eased = 1 - Math.pow(1 - Math.min(1, t), 3);
-    this.winText.alpha = eased;
-    this.winText.scale.set(0.5 + eased * 0.5);
-    const hintT = Math.max(0, Math.min(1, (t - 0.7) / 0.3));
-    this.hintText.alpha = hintT;
-  }
-
-  private redrawHp(): void {
-    const w = 200;
-    const h = 14;
-    this.hpBg.clear();
-    this.hpBg
-      .rect(0, 0, w, h)
-      .fill({ color: 0x1d1828, alpha: 0.7 })
-      .stroke({ color: 0x5dd9e8, width: 1.5, alpha: 0.8 });
-
-    const ratio = this.hp / this.maxHp;
-    const fillW = w * ratio;
-    const color = ratio > 0.5 ? 0x9be7ff : ratio > 0.25 ? 0xffe066 : 0xff6b6b;
-    this.hpBar.clear();
-    if (fillW > 0) {
-      this.hpBar
-        .rect(2, 2, Math.max(0, fillW - 4), h - 4)
-        .fill({ color, alpha: 0.9 });
+    // ── chain meter ──
+    if (g.chain > 1) {
+      const mul = g.chainMul;
+      const k = Math.max(0, g.chainTimer / CHAIN.window);
+      ctx.font = `800 18px ${DISPLAY}`;
+      ctx.fillStyle = mul >= 4 ? COLORS.gold : COLORS.bone;
+      ctx.fillText(`${g.chain} CHAIN`, 28, 92);
+      ctx.font = `800 22px ${DISPLAY}`;
+      ctx.fillStyle = mul >= 4 ? COLORS.orange : COLORS.magenta;
+      ctx.fillText(`×${mul}`, 150, 93);
+      ctx.fillStyle = 'rgba(230,216,184,0.15)';
+      ctx.fillRect(28, 100, 160, 3);
+      ctx.fillStyle = mul >= 4 ? COLORS.gold : COLORS.magenta;
+      ctx.fillRect(28, 100, 160 * k, 3);
     }
-  }
 
-  private redrawBossHp(): void {
-    const w = 720;
-    const h = 16;
-    this.bossBg.clear();
-    this.bossBg
-      .rect(0, 0, w, h)
-      .fill({ color: 0x1d1828, alpha: 0.75 })
-      .stroke({ color: 0xff6b6b, width: 2, alpha: 0.9 });
-
-    const ratio = this.bossHp / this.bossMaxHp;
-    const fillW = w * ratio;
-    this.bossBar.clear();
-    if (fillW > 0) {
-      this.bossBar
-        .rect(2, 2, Math.max(0, fillW - 4), h - 4)
-        .fill({ color: 0xff6b6b, alpha: 0.92 });
+    // ── hull (top-right) ──
+    const sx = this.hpShake > 0 ? (Math.random() - 0.5) * this.hpShake * 0.5 : 0;
+    const pipW = 22, gap = 5;
+    const maxHp = g.maxHp;
+    const hx = STAGE.width - 26 - maxHp * (pipW + gap) + gap + sx;
+    ctx.font = `600 11px ${MONO}`;
+    ctx.textAlign = 'right';
+    ctx.fillStyle = COLORS.boneDim;
+    ctx.fillText('HULL', hx - 8, 38);
+    for (let i = 0; i < maxHp; i++) {
+      const on = i < g.hp;
+      const x = hx + i * (pipW + gap);
+      const low = g.hp <= 1;
+      ctx.fillStyle = on ? (low ? COLORS.red : COLORS.ice) : 'rgba(230,216,184,0.12)';
+      if (on && low && Math.floor(g.gameTime / 10) % 2) ctx.fillStyle = '#ffffff';
+      this.skew(ctx, x, 26, pipW, 14);
     }
+
+    // ── bombs + power ──
+    const bombArt = art('puBomb');
+    ctx.fillStyle = COLORS.boneDim;
+    ctx.fillText('BOMB', hx - 8, 64);
+    for (let i = 0; i < PLAYER.maxBombs; i++) {
+      ctx.globalAlpha = i < g.bombs ? 1 : 0.15;
+      ctx.drawImage(bombArt.img, hx + i * 26 - 12, 41, 38, 38);
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillText('PWR', hx - 8, 90);
+    for (let i = 0; i < PLAYER.maxPower; i++) {
+      const on = i < g.player.power;
+      ctx.fillStyle = on ? (g.player.power === PLAYER.maxPower ? COLORS.gold : COLORS.orange) : 'rgba(230,216,184,0.12)';
+      this.skew(ctx, hx + i * 30, 80, 26, 9);
+    }
+    if (g.player.power === PLAYER.maxPower) {
+      ctx.font = `700 10px ${MONO}`;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = COLORS.gold;
+      ctx.fillText('MAX', hx + 4 * 30 + 2, 89);
+    }
+
+    // ── timed power-ups (bottom-left) ──
+    let px = 34;
+    for (const kind of TIMED) {
+      const left = g.timeLeft(kind);
+      if (left <= 0) continue;
+      const a = art(PICKUP_ART[kind]);
+      const k = left / POWERUP_FRAMES[kind];
+      const y = STAGE.height - 38;
+      ctx.globalAlpha = left < 120 && Math.floor(left / 8) % 2 ? 0.35 : 1;
+      ctx.drawImage(a.img, px - 20, y - 20, 40, 40);
+      ctx.strokeStyle = COLORS.gold;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(px, y, 22, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      px += 54;
+    }
+
+    // ── boss bar ──
+    const boss = g.boss;
+    if (boss && !boss.dead) {
+      const w = 720, h = 12;
+      const x = STAGE.width / 2 - w / 2, y = STAGE.height - 34;
+      const k = boss.totalHp / boss.totalMaxHp;
+      ctx.textAlign = 'left';
+      ctx.font = `800 15px ${DISPLAY}`;
+      ctx.fillStyle = COLORS.red;
+      ctx.fillText('CARRION IX', x, y - 10);
+      ctx.textAlign = 'right';
+      ctx.font = `600 11px ${MONO}`;
+      ctx.fillStyle = COLORS.boneDim;
+      ctx.fillText(`MOTHER OF ENGINES · PHASE ${boss.stage}/3`, x + w, y - 10);
+      ctx.fillStyle = 'rgba(29,24,40,0.85)';
+      ctx.fillRect(x, y, w, h);
+      const grad = ctx.createLinearGradient(x, 0, x + w, 0);
+      grad.addColorStop(0, '#a83232');
+      grad.addColorStop(1, '#ff6b6b');
+      ctx.fillStyle = grad;
+      ctx.fillRect(x + 2, y + 2, Math.max(0, (w - 4) * k), h - 4);
+      ctx.fillStyle = COLORS.void;
+      for (const m of boss.phaseMarks) ctx.fillRect(x + w * m - 1, y, 2, h);
+      ctx.strokeStyle = 'rgba(255,107,107,0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, y, w, h);
+    }
+
+    // ── difficulty badge (bottom-right) ──
+    ctx.textAlign = 'right';
+    ctx.font = `700 12px ${MONO}`;
+    ctx.fillStyle = g.difficulty === 'hard' ? COLORS.red : g.difficulty === 'easy' ? COLORS.toxic : COLORS.ice;
+    ctx.globalAlpha = 0.75;
+    const loopTag = g.loop > 1 ? `  LOOP ${g.loop}` : '';
+    ctx.fillText(`${g.muls.label}${loopTag}`, STAGE.width - 26, STAGE.height - 18);
+    if (fps !== null) {
+      ctx.fillStyle = COLORS.boneDim;
+      ctx.fillText(`${fps} FPS · ${g.fx.particleCount}p · ${g.enemyBullets.length}b`, STAGE.width - 26, STAGE.height - 36);
+    }
+    ctx.globalAlpha = 1;
+
+    this.drawBanner(r);
+    this.drawWarning(r);
+    this.drawHint(r);
   }
+
+  private skew(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number): void {
+    ctx.beginPath();
+    ctx.moveTo(x + 4, y);
+    ctx.lineTo(x + w, y);
+    ctx.lineTo(x + w - 4, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  private drawBanner(r: Renderer): void {
+    const b = this.bannerState;
+    if (!b) return;
+    const ctx = r.ctx;
+    const inT = Math.min(1, b.t / 18);
+    const outT = Math.min(1, Math.max(0, (b.life - b.t) / 24));
+    const a = Math.min(inT, outT);
+    const slide = (1 - inT) * 60;
+    const cx = STAGE.width / 2, cy = STAGE.height / 2 - 40;
+
+    ctx.globalAlpha = a * 0.65;
+    const band = ctx.createLinearGradient(0, 0, STAGE.width, 0);
+    band.addColorStop(0, 'rgba(4,3,10,0)');
+    band.addColorStop(0.5, 'rgba(4,3,10,0.85)');
+    band.addColorStop(1, 'rgba(4,3,10,0)');
+    ctx.fillStyle = band;
+    ctx.fillRect(0, cy - 64, STAGE.width, 128);
+
+    ctx.globalAlpha = a;
+    ctx.textAlign = 'center';
+    ctx.font = `600 14px ${MONO}`;
+    ctx.fillStyle = b.color;
+    ctx.fillText(spaced(b.kicker), cx - slide, cy - 30);
+    ctx.font = `800 54px ${DISPLAY}`;
+    ctx.fillStyle = COLORS.bone;
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 24;
+    ctx.fillText(b.title, cx + slide, cy + 22);
+    ctx.shadowBlur = 0;
+    if (b.sub) {
+      ctx.font = `italic 500 15px ${MONO}`;
+      ctx.fillStyle = COLORS.boneDim;
+      ctx.fillText(b.sub, cx - slide * 0.5, cy + 50);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  private drawWarning(r: Renderer): void {
+    if (this.warningT <= 0) return;
+    const ctx = r.ctx;
+    const t = 200 - this.warningT;
+    const a = Math.min(1, t / 15, this.warningT / 20);
+    const blink = Math.floor(t / 14) % 2 === 0 ? 1 : 0.55;
+    const cy = STAGE.height / 2 - 20;
+
+    ctx.globalAlpha = a * 0.28;
+    ctx.fillStyle = '#a83232';
+    ctx.fillRect(0, cy - 70, STAGE.width, 140);
+    // Hazard stripes.
+    ctx.globalAlpha = a * 0.55;
+    ctx.fillStyle = '#ff3b3b';
+    const off = (t * 3) % 40;
+    for (const yy of [cy - 70, cy + 62]) {
+      for (let x = -40 + off; x < STAGE.width + 40; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, yy);
+        ctx.lineTo(x + 20, yy);
+        ctx.lineTo(x + 12, yy + 8);
+        ctx.lineTo(x - 8, yy + 8);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = a * blink;
+    ctx.textAlign = 'center';
+    ctx.font = `900 64px ${DISPLAY}`;
+    ctx.fillStyle = '#ff6b6b';
+    ctx.shadowColor = '#ff3b3b';
+    ctx.shadowBlur = 30;
+    ctx.fillText('WARNING', STAGE.width / 2, cy + 14);
+    ctx.shadowBlur = 0;
+    ctx.font = `600 14px ${MONO}`;
+    ctx.fillStyle = COLORS.bone;
+    ctx.fillText(spaced('CARRION IX APPROACHING'), STAGE.width / 2, cy + 44);
+    ctx.globalAlpha = 1;
+  }
+
+  private drawHint(r: Renderer): void {
+    if (this.hintT <= 0) return;
+    const g = this.game;
+    const ctx = r.ctx;
+    const a = Math.min(1, this.hintT / 30, (420 - this.hintT) / 30);
+    const lines = g.input.usingTouch
+      ? ['DRAG anywhere to fly — the ship follows your finger', 'Firing is automatic · tap ✹ to bomb', 'Only the glowing core is your hitbox']
+      : g.input.usingPad
+        ? ['Stick / D-pad to fly · A to fire · B to bomb', 'Hold a shoulder button to FOCUS (slow + show hitbox)', 'Graze bullets for points — only the core can be hit']
+        : ['ARROWS / WASD to fly · SPACE to fire · X to bomb', 'Hold SHIFT to FOCUS: slow flight, visible hitbox', 'Graze bullets for points · F toggles auto-fire'];
+    ctx.globalAlpha = Math.max(0, a) * 0.9;
+    ctx.textAlign = 'center';
+    ctx.font = `500 15px ${MONO}`;
+    lines.forEach((line, i) => {
+      ctx.fillStyle = i === 0 ? COLORS.ice : COLORS.bone;
+      ctx.fillText(line, STAGE.width / 2, STAGE.height - 150 + i * 24);
+    });
+    ctx.globalAlpha = 1;
+  }
+}
+
+function spaced(s: string): string {
+  return s.split('').join(' ');
 }

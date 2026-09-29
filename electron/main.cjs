@@ -23,8 +23,8 @@ const createWindow = () => {
     height: 720,
     minWidth: 960,
     minHeight: 540,
-    title: 'Claude Shooter',
-    backgroundColor: '#0a0a1a',
+    title: 'Carrion IX',
+    backgroundColor: '#04030a',
     autoHideMenuBar: false,
     webPreferences: {
       contextIsolation: true,
@@ -35,7 +35,7 @@ const createWindow = () => {
 
   win.loadURL('app://main/index.html');
 
-  win.webContents.openDevTools({ mode: 'detach' });
+  if (process.env.CARRION_DEVTOOLS) win.webContents.openDevTools({ mode: 'detach' });
 
   win.webContents.on('did-fail-load', (_e, code, desc, url) => {
     console.error('[electron] did-fail-load', code, desc, url);

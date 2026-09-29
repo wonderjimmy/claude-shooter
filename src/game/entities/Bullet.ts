@@ -1,90 +1,84 @@
-import { Sprite } from 'pixi.js';
-import { Entity } from './Entity';
-import type { Game } from '../Game';
 import { STAGE } from '../../config';
-import { tex, type SpriteKey } from '../assets/sprites';
-
-export type BulletSide = 'player' | 'enemy';
+import { art, type Art, type ArtKey } from '../../core/Art';
+import type { Renderer } from '../Renderer';
 
 export interface BulletSpec {
-  side: BulletSide;
-  sprite: SpriteKey;
-  scale: number;
+  art: ArtKey;
+  /** Draw scale relative to the baked art. */
+  scale?: number;
   radius: number;
-  blur?: number;
-  tint?: number;
-  rotateToVelocity?: boolean;
-  pierce?: boolean;
   damage?: number;
+  pierce?: boolean;
+  /** Radians per frame; bends the velocity (curving boss patterns). */
+  turn?: number;
+  /** Speed multiplier per frame (1 = constant). */
+  accel?: number;
+  /** Spin the sprite instead of pointing it along velocity. */
+  spin?: number;
 }
 
-export class Bullet extends Entity {
-  radius: number;
-  readonly side: BulletSide;
-  readonly pierce: boolean;
+export class Bullet {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  readonly radius: number;
   readonly damage: number;
-  readonly hitTargets = new Set<unknown>();
+  readonly pierce: boolean;
+  readonly hits: Set<object> | null;
+  grazed = false;
+  dead = false;
+  age = 0;
+  private readonly a: Art;
+  private readonly scale: number;
+  private readonly turn: number;
+  private readonly accel: number;
+  private readonly spin: number;
+  private rot: number;
 
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    private vx: number,
-    private vy: number,
-    spec: BulletSpec,
-  ) {
-    super(game);
+  constructor(x: number, y: number, vx: number, vy: number, spec: BulletSpec) {
     this.x = x;
     this.y = y;
-    this.side = spec.side;
+    this.vx = vx;
+    this.vy = vy;
+    this.a = art(spec.art);
+    this.scale = spec.scale ?? 1;
     this.radius = spec.radius;
-    this.pierce = spec.pierce ?? false;
     this.damage = spec.damage ?? 1;
-
-    const sprite = new Sprite(tex(spec.sprite));
-    sprite.anchor.set(0.5);
-    sprite.scale.set(spec.scale);
-    if (spec.tint !== undefined) sprite.tint = spec.tint;
-    // Per-bullet BlurFilter dropped: each bullet would create its own framebuffer pass,
-    // and with spread+multi up to ~15 bullets onscreen this dominates GPU cost on WebKit.
-    // The proj-pulse / proj-charge SVGs already include glow gradients, so visual impact is small.
-    if (spec.rotateToVelocity ?? true) {
-      sprite.rotation = Math.atan2(vy, vx);
-    }
-    this.view.addChild(sprite);
+    this.pierce = spec.pierce ?? false;
+    this.hits = this.pierce ? new Set() : null;
+    this.turn = spec.turn ?? 0;
+    this.accel = spec.accel ?? 1;
+    this.spin = spec.spin ?? 0;
+    this.rot = this.spin ? Math.random() * Math.PI : Math.atan2(vy, vx);
   }
 
-  override update(dt: number): void {
+  update(dt: number): void {
+    this.age += dt;
+    if (this.turn !== 0) {
+      const c = Math.cos(this.turn * dt), s = Math.sin(this.turn * dt);
+      const vx = this.vx * c - this.vy * s;
+      this.vy = this.vx * s + this.vy * c;
+      this.vx = vx;
+    }
+    if (this.accel !== 1) {
+      const m = Math.pow(this.accel, dt);
+      this.vx *= m;
+      this.vy *= m;
+    }
     this.x += this.vx * dt;
     this.y += this.vy * dt;
-    if (
-      this.x < -64 || this.x > STAGE.width + 64 ||
-      this.y < -64 || this.y > STAGE.height + 64
-    ) {
-      this.destroy();
+    this.rot = this.spin ? this.rot + this.spin * dt : Math.atan2(this.vy, this.vx);
+    if (this.x < -80 || this.x > STAGE.width + 80 || this.y < -80 || this.y > STAGE.height + 80) {
+      this.dead = true;
     }
   }
-}
 
-export const PLAYER_BULLET: Omit<BulletSpec, 'side'> = {
-  sprite: 'projPulse',
-  scale: 0.45,
-  radius: 4,
-  blur: 2,
-};
+  draw(r: Renderer): void {
+    r.sprite(this.a, this.x, this.y, this.rot, this.scale);
+  }
 
-export function playerBullet(): BulletSpec {
-  return { side: 'player', ...PLAYER_BULLET };
-}
-
-export function laserBullet(): BulletSpec {
-  return {
-    side: 'player',
-    sprite: 'projCharge',
-    scale: 0.85,
-    radius: 8,
-    blur: 3,
-    pierce: true,
-    tint: 0xfff2a8,
-  };
+  drawGlow(r: Renderer, alpha: number): void {
+    r.glow(this.a, this.x, this.y, this.rot, this.scale, alpha);
+  }
 }

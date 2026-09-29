@@ -1,337 +1,324 @@
-import { Graphics, Sprite } from 'pixi.js';
-import { Entity } from './Entity';
-import { Bullet } from './Bullet';
-import type { Game } from '../Game';
 import { STAGE } from '../../config';
-import { tex, type SpriteKey } from '../assets/sprites';
+import { art, type Art, type ArtKey } from '../../core/Art';
+import type { Game } from '../Game';
+import type { Renderer } from '../Renderer';
+import { Bullet, type BulletSpec } from './Bullet';
 
 export type BossStage = 1 | 2 | 3;
 
 interface PhaseSpec {
-  sprite: SpriteKey;
+  art: ArtKey;
   hp: number;
-  scale: number;
   radius: number;
   fireInterval: number;
   pattern: 'spread' | 'burst' | 'hell';
 }
 
-const PHASES: Record<BossStage, PhaseSpec> = {
-  1: { sprite: 'bossStage1', hp: 60, scale: 1.6, radius: 220, fireInterval: 80, pattern: 'spread' },
-  2: { sprite: 'bossStage2', hp: 50, scale: 1.9, radius: 200, fireInterval: 110, pattern: 'burst' },
-  3: { sprite: 'bossStage3', hp: 50, scale: 2.1, radius: 180, fireInterval: 32, pattern: 'hell' },
+export const BOSS_PHASES: Record<BossStage, PhaseSpec> = {
+  // HP is ~2.5× the Pixi build's because the player now has power levels 1–4.
+  1: { art: 'bossStage1', hp: 150, radius: 210, fireInterval: 80, pattern: 'spread' },
+  2: { art: 'bossStage2', hp: 130, radius: 195, fireInterval: 110, pattern: 'burst' },
+  3: { art: 'bossStage3', hp: 140, radius: 175, fireInterval: 34, pattern: 'hell' },
 };
+
+const ORB: BulletSpec = { art: 'projBoss', radius: 6 };
+const ORB_SMALL: BulletSpec = { art: 'projBoss', scale: 0.8, radius: 5 };
+const ORB_PINK: BulletSpec = { art: 'projBossPink', radius: 6 };
 
 const BURST_SHOTS = 4;
 const BURST_GAP = 6;
-const BURST_EMITTER_OFFSET = 90;
-
+const BURST_OFFSET = 90;
 const LASER_COOLDOWN = 220;
 const LASER_CHARGE = 60;
 const LASER_FIRE = 50;
 const LASER_LENGTH = STAGE.width * 1.6;
-const LASER_HALF_WIDTH = 22;
+const LASER_HALF = 22;
+const ENTRY_FRAMES = 110;
+const TRANSITION_FRAMES = 70;
 
-const ENTRY_FRAMES = 90;
-
-export class Boss extends Entity {
-  radius: number;
-  hp: number;
-  maxHp: number;
+export class Boss {
+  x = STAGE.width + 420;
+  y = STAGE.height / 2;
+  dead = false;
   stage: BossStage = 1;
+  hp: number;
+  radius: number;
+  /** Frames of invulnerability left (entry + phase transitions). */
+  shielded = ENTRY_FRAMES;
 
   private spec: PhaseSpec;
-  private sprite: Sprite;
+  private a: Art;
   private t = 0;
-  private fireTimer = 0;
-  private centerX: number;
-  private centerY: number;
-  private flashTimer = 0;
-  private entryTimer = ENTRY_FRAMES;
-  private startX: number;
-  private burstShotsLeft = 0;
+  private fireTimer = 60;
+  private volley = 0;
+  private flash = 0;
+  private entry = ENTRY_FRAMES;
+  private readonly startX = STAGE.width + 420;
+  private readonly cx = STAGE.width - 320;
+  private readonly cy = STAGE.height / 2;
+  private burstLeft = 0;
   private burstTimer = 0;
+  private spiral = 0;
+  private spiralTimer = 0;
 
-  private laserState: 'idle' | 'charge' | 'fire' = 'idle';
+  private laser: 'idle' | 'charge' | 'fire' = 'idle';
   private laserTimer = 0;
-  private laserCooldown = LASER_COOLDOWN + 60;
+  private laserCooldown: number;
   private laserAngle = 0;
-  private laserOriginX = 0;
-  private laserOriginY = 0;
-  private beam: Graphics;
+  private laserX = 0;
+  private laserY = 0;
 
-  constructor(game: Game) {
-    super(game);
-    this.spec = this.scaledPhase(1);
+  constructor(private game: Game) {
+    this.spec = this.scaled(1);
     this.hp = this.spec.hp;
-    this.maxHp = this.spec.hp;
     this.radius = this.spec.radius;
+    this.a = art(this.spec.art);
     this.laserCooldown = (LASER_COOLDOWN + 60) * game.muls.bossFire;
-
-    this.centerX = STAGE.width - 320;
-    this.centerY = STAGE.height / 2;
-    this.startX = STAGE.width + 400;
-    this.x = this.startX;
-    this.y = this.centerY;
-
-    this.sprite = new Sprite(tex(this.spec.sprite));
-    this.sprite.anchor.set(0.5);
-    this.sprite.scale.set(this.spec.scale);
-    this.view.addChild(this.sprite);
-
-    this.beam = new Graphics();
-    this.beam.visible = false;
-    game.layers.fx.addChild(this.beam);
   }
 
-  override destroy(): void {
-    if (!this.beam.destroyed) this.beam.destroy();
-    super.destroy();
+  private scaled(stage: BossStage): PhaseSpec {
+    const base = BOSS_PHASES[stage];
+    const m = this.game.muls;
+    return { ...base, hp: Math.ceil(base.hp * m.bossHp), fireInterval: base.fireInterval * m.bossFire };
   }
+
+  get maxHp(): number { return this.spec.hp; }
 
   get totalMaxHp(): number {
     const m = this.game.muls.bossHp;
-    return Math.ceil(PHASES[1].hp * m) + Math.ceil(PHASES[2].hp * m) + Math.ceil(PHASES[3].hp * m);
+    return ([1, 2, 3] as BossStage[]).reduce((s, st) => s + Math.ceil(BOSS_PHASES[st].hp * m), 0);
   }
+
   get totalHp(): number {
     const m = this.game.muls.bossHp;
-    let remaining = this.hp;
-    for (let s = (this.stage + 1) as BossStage; s <= 3; s = (s + 1) as BossStage) {
-      remaining += Math.ceil(PHASES[s].hp * m);
-    }
-    return remaining;
+    let rest = Math.max(0, this.hp);
+    for (let s = this.stage + 1; s <= 3; s++) rest += Math.ceil(BOSS_PHASES[s as BossStage].hp * m);
+    return rest;
   }
 
-  private scaledPhase(stage: BossStage): PhaseSpec {
-    const base = PHASES[stage];
-    const m = this.game.muls;
-    return {
-      ...base,
-      hp: Math.ceil(base.hp * m.bossHp),
-      fireInterval: base.fireInterval * m.bossFire,
-    };
+  /** Phase boundaries as fractions of the total bar, for HUD notches. */
+  get phaseMarks(): number[] {
+    const m = this.game.muls.bossHp;
+    const total = this.totalMaxHp;
+    const p3 = Math.ceil(BOSS_PHASES[3].hp * m);
+    const p2 = Math.ceil(BOSS_PHASES[2].hp * m);
+    return [p3 / total, (p3 + p2) / total];
   }
 
-  override update(dt: number): void {
+  get entering(): boolean { return this.entry > 0; }
+
+  update(dt: number): void {
     this.t += dt;
+    if (this.flash > 0) this.flash -= dt;
+    if (this.dead) {
+      // Death throes: shudder in place while the outro plays.
+      this.x = this.cx + (Math.random() - 0.5) * 14;
+      this.y = this.cy + (Math.random() - 0.5) * 14;
+      this.flash = 2;
+      return;
+    }
+    if (this.shielded > 0) this.shielded -= dt;
 
-    if (this.entryTimer > 0) {
-      this.entryTimer -= dt;
-      const k = 1 - Math.max(0, this.entryTimer) / ENTRY_FRAMES;
-      const eased = 1 - Math.pow(1 - k, 3);
-      this.x = this.startX + (this.centerX - this.startX) * eased;
+    if (this.entry > 0) {
+      this.entry -= dt;
+      const k = 1 - Math.max(0, this.entry) / ENTRY_FRAMES;
+      this.x = this.startX + (this.cx - this.startX) * (1 - Math.pow(1 - k, 3));
       return;
     }
 
-    this.y = this.centerY + Math.sin(this.t * 0.03) * 40;
-    this.x = this.centerX + Math.cos(this.t * 0.022) * 20;
-    this.sprite.rotation = Math.sin(this.t * 0.015) * 0.04;
+    const wobble = this.stage === 3 ? 1.6 : 1;
+    this.y = this.cy + Math.sin(this.t * 0.03) * 40 * wobble;
+    this.x = this.cx + Math.cos(this.t * 0.022) * 20 * wobble;
 
-    if (this.flashTimer > 0) {
-      this.flashTimer -= dt;
-      if (this.flashTimer <= 0) this.sprite.tint = 0xffffff;
-    }
+    if (this.shielded > 0) return; // mid-transition: no attacks
 
-    if (this.burstShotsLeft > 0) {
+    if (this.burstLeft > 0) {
       this.burstTimer -= dt;
       if (this.burstTimer <= 0) {
         this.fireBurstShot();
-        this.burstShotsLeft -= 1;
+        this.burstLeft -= 1;
         this.burstTimer = BURST_GAP;
       }
     }
 
     this.fireTimer -= dt;
-    if (this.fireTimer <= 0 && this.burstShotsLeft === 0) {
-      this.fireTimer = this.spec.fireInterval;
+    if (this.fireTimer <= 0 && this.burstLeft === 0) {
+      this.fireTimer = this.spec.fireInterval * (this.desperate ? 1.4 : 1);
+      this.volley++;
       if (this.spec.pattern === 'burst') {
-        this.burstShotsLeft = BURST_SHOTS;
+        this.burstLeft = BURST_SHOTS;
         this.burstTimer = 0;
       } else {
         this.fire();
       }
     }
 
+    if (this.desperate) {
+      this.spiralTimer -= dt;
+      if (this.spiralTimer <= 0) {
+        this.spiralTimer = 7 * this.game.muls.bossFire;
+        this.spiral += 0.37;
+        const sp = 3.1 * this.game.muls.bulletSpeed;
+        for (const off of [0, Math.PI]) {
+          const a = this.spiral + off;
+          this.emit(this.x, this.y, a, sp, ORB_PINK);
+        }
+      }
+    }
+
     this.updateLaser(dt);
   }
 
-  private updateLaser(dt: number): void {
-    if (this.stage !== 2) {
-      if (this.laserState !== 'idle') {
-        this.laserState = 'idle';
-        this.beam.visible = false;
-      }
-      return;
-    }
-
-    const player = this.game.player;
-    const originX = this.x - 40;
-    const originY = this.y;
-
-    if (this.laserState === 'idle') {
-      this.laserCooldown -= dt;
-      if (this.laserCooldown <= 0) {
-        this.laserState = 'charge';
-        this.laserTimer = LASER_CHARGE;
-      }
-    } else if (this.laserState === 'charge') {
-      this.laserTimer -= dt;
-      this.laserOriginX = originX;
-      this.laserOriginY = originY;
-      this.laserAngle = Math.atan2(player.y - originY, player.x - originX);
-      this.drawBeam(true);
-      if (this.laserTimer <= 0) {
-        this.laserState = 'fire';
-        this.laserTimer = LASER_FIRE;
-        this.game.shake.add(0.3);
-      }
-    } else {
-      this.laserTimer -= dt;
-      this.drawBeam(false);
-      if (this.laserTimer <= 0) {
-        this.laserState = 'idle';
-        this.laserCooldown = LASER_COOLDOWN * this.game.muls.bossFire;
-        this.beam.visible = false;
-      }
-    }
+  private get desperate(): boolean {
+    return this.stage === 3 && this.hp < this.spec.hp * 0.4;
   }
 
-  private drawBeam(charging: boolean): void {
-    this.beam.clear();
-    this.beam.position.set(this.laserOriginX, this.laserOriginY);
-    this.beam.rotation = this.laserAngle;
-    this.beam.visible = true;
-
-    const halfW = charging ? 1.5 : LASER_HALF_WIDTH;
-    const innerColor = charging ? 0xff6b6b : 0xffffff;
-    const outerColor = 0xff4444;
-    const innerAlpha = charging ? 0.4 + Math.sin(this.t * 0.6) * 0.25 : 0.95;
-
-    this.beam
-      .rect(0, -halfW * 2.4, LASER_LENGTH, halfW * 4.8)
-      .fill({ color: outerColor, alpha: charging ? 0.18 : 0.45 });
-    this.beam
-      .rect(0, -halfW, LASER_LENGTH, halfW * 2)
-      .fill({ color: innerColor, alpha: innerAlpha });
-
-    if (!charging) {
-      this.beam
-        .rect(0, -halfW * 0.4, LASER_LENGTH, halfW * 0.8)
-        .fill({ color: 0xffffff, alpha: 0.95 });
-    }
+  private emit(x: number, y: number, a: number, sp: number, spec: BulletSpec): void {
+    this.game.enemyBullets.push(new Bullet(x, y, Math.cos(a) * sp, Math.sin(a) * sp, spec));
   }
 
-  isLaserDangerous(): boolean {
-    return this.laserState === 'fire';
-  }
-
-  laserHits(px: number, py: number, pr: number): boolean {
-    if (!this.isLaserDangerous()) return false;
-    const dx = px - this.laserOriginX;
-    const dy = py - this.laserOriginY;
-    const cos = Math.cos(-this.laserAngle);
-    const sin = Math.sin(-this.laserAngle);
-    const rx = dx * cos - dy * sin;
-    const ry = dx * sin + dy * cos;
-    return rx > -20 && rx < LASER_LENGTH && Math.abs(ry) < LASER_HALF_WIDTH + pr;
-  }
-
-  damage(amount: number): boolean {
-    if (this.entryTimer > 0) return false;
-    this.hp -= amount;
-    this.sprite.tint = 0xffaaaa;
-    this.flashTimer = 4;
-    if (this.hp <= 0) {
-      if (this.stage < 3) {
-        this.advanceStage();
-        return false;
-      }
-      this.dead = true;
-      return true;
-    }
-    return false;
-  }
-
-  private advanceStage(): void {
-    this.stage = (this.stage + 1) as BossStage;
-    this.spec = this.scaledPhase(this.stage);
-    this.hp = this.spec.hp;
-    this.maxHp = this.spec.hp;
-    this.sprite.texture = tex(this.spec.sprite);
-    this.sprite.scale.set(this.spec.scale);
-    this.radius = this.spec.radius;
-    this.fireTimer = 30;
-    this.burstShotsLeft = 0;
-    this.burstTimer = 0;
-    this.laserState = 'idle';
-    this.laserCooldown = (LASER_COOLDOWN + 60) * this.game.muls.bossFire;
-    this.beam.visible = false;
-
-    this.game.shake.add(0.7);
-    this.game.bossPhaseTransition(this.x, this.y);
-  }
-
-  private fireBurstShot(): void {
-    const fromTop = this.burstShotsLeft % 2 === 0;
-    const offsetY = fromTop ? -BURST_EMITTER_OFFSET : BURST_EMITTER_OFFSET;
-    const ex = this.x;
-    const ey = this.y + offsetY;
-    const player = this.game.player;
-    const dx = player.x - ex;
-    const dy = player.y - ey;
-    const a = Math.atan2(dy, dx);
-    const speed = 6.0;
-    this.game.spawn(new Bullet(
-      this.game, ex, ey,
-      Math.cos(a) * speed, Math.sin(a) * speed,
-      { side: 'enemy', sprite: 'projBoss', scale: 0.38, radius: 6, tint: 0xff9aff },
-    ));
+  private aimFrom(x: number, y: number): number {
+    const p = this.game.player;
+    return Math.atan2(p.y - y, p.x - x);
   }
 
   private fire(): void {
-    const player = this.game.player;
-    const baseSpec = { side: 'enemy' as const, sprite: 'projBoss' as SpriteKey, scale: 0.4, radius: 6 };
-
+    const bs = this.game.muls.bulletSpeed;
     switch (this.spec.pattern) {
       case 'spread': {
-        const speed = 4;
-        for (let i = -2; i <= 2; i++) {
-          const a = Math.PI + i * 0.18;
-          this.game.spawn(new Bullet(
-            this.game, this.x, this.y,
-            Math.cos(a) * speed, Math.sin(a) * speed,
-            baseSpec,
-          ));
+        for (let i = -2; i <= 2; i++) this.emit(this.x - 60, this.y, Math.PI + i * 0.18, 4 * bs, ORB);
+        if (this.volley % 3 === 0) {
+          const aim = this.aimFrom(this.x - 60, this.y);
+          for (const o of [-0.12, 0, 0.12]) this.emit(this.x - 60, this.y, aim + o, 5.5 * bs, ORB_PINK);
         }
-        break;
-      }
-      case 'burst': {
-        // handled by fireBurstShot via burstShotsLeft scheduling
         break;
       }
       case 'hell': {
-        const speed = 4;
-        const ringCount = 10;
+        const count = this.desperate ? 8 : 10;
         const phase = this.t * 0.04;
-        for (let i = 0; i < ringCount; i++) {
-          const a = (i / ringCount) * Math.PI * 2 + phase;
-          this.game.spawn(new Bullet(
-            this.game, this.x, this.y,
-            Math.cos(a) * speed, Math.sin(a) * speed,
-            { ...baseSpec, scale: 0.32, radius: 5 },
-          ));
+        for (let i = 0; i < count; i++) {
+          this.emit(this.x, this.y, (i / count) * Math.PI * 2 + phase, 4 * bs, ORB_SMALL);
         }
-        const dx = player.x - this.x, dy = player.y - this.y;
-        const aim = Math.atan2(dy, dx);
-        this.game.spawn(new Bullet(
-          this.game, this.x, this.y,
-          Math.cos(aim) * 6, Math.sin(aim) * 6,
-          { ...baseSpec, scale: 0.45, radius: 7 },
-        ));
+        this.emit(this.x, this.y, this.aimFrom(this.x, this.y), 6 * bs, { ...ORB, scale: 1.1, radius: 7 });
         break;
+      }
+      case 'burst':
+        break;
+    }
+    this.game.audio.play('hit', { volume: 0.4, rate: 0.6 });
+  }
+
+  private fireBurstShot(): void {
+    const ey = this.y + (this.burstLeft % 2 === 0 ? -BURST_OFFSET : BURST_OFFSET);
+    this.emit(this.x, ey, this.aimFrom(this.x, ey), 6 * this.game.muls.bulletSpeed, ORB_PINK);
+  }
+
+  private updateLaser(dt: number): void {
+    if (this.stage !== 2) { this.laser = 'idle'; return; }
+    const p = this.game.player;
+    if (this.laser === 'idle') {
+      this.laserCooldown -= dt;
+      if (this.laserCooldown <= 0) { this.laser = 'charge'; this.laserTimer = LASER_CHARGE; }
+    } else if (this.laser === 'charge') {
+      this.laserTimer -= dt;
+      this.laserX = this.x - 40;
+      this.laserY = this.y;
+      // Stop tracking for the last 12 frames so the dodge window is honest.
+      if (this.laserTimer > 12) this.laserAngle = Math.atan2(p.y - this.laserY, p.x - this.laserX);
+      if (this.laserTimer <= 0) {
+        this.laser = 'fire';
+        this.laserTimer = LASER_FIRE;
+        this.game.shake.add(0.35);
+        this.game.audio.play('bossPhase', { volume: 0.6, rate: 1.4 });
+      }
+    } else {
+      this.laserTimer -= dt;
+      if (this.laserTimer <= 0) {
+        this.laser = 'idle';
+        this.laserCooldown = LASER_COOLDOWN * this.game.muls.bossFire;
       }
     }
   }
-}
 
-export { PHASES as BOSS_PHASES };
+  laserHits(px: number, py: number, pr: number): boolean {
+    if (this.laser !== 'fire') return false;
+    const dx = px - this.laserX, dy = py - this.laserY;
+    const c = Math.cos(-this.laserAngle), s = Math.sin(-this.laserAngle);
+    const rx = dx * c - dy * s;
+    const ry = dx * s + dy * c;
+    return rx > -20 && rx < LASER_LENGTH && Math.abs(ry) < LASER_HALF + pr;
+  }
+
+  /** Returns 'phase' when a phase breaks, 'dead' on the final blow. */
+  damage(amount: number): 'none' | 'hit' | 'phase' | 'dead' {
+    if (this.shielded > 0 || this.dead) return 'none';
+    this.hp -= amount;
+    this.flash = 3;
+    if (this.hp > 0) return 'hit';
+    if (this.stage < 3) {
+      this.advance();
+      return 'phase';
+    }
+    this.dead = true;
+    return 'dead';
+  }
+
+  private advance(): void {
+    this.stage = (this.stage + 1) as BossStage;
+    this.spec = this.scaled(this.stage);
+    this.hp = this.spec.hp;
+    this.radius = this.spec.radius;
+    this.a = art(this.spec.art);
+    this.fireTimer = 40;
+    this.burstLeft = 0;
+    this.laser = 'idle';
+    this.laserCooldown = (LASER_COOLDOWN + 60) * this.game.muls.bossFire;
+    this.shielded = TRANSITION_FRAMES;
+    this.game.onBossPhase(this.x, this.y);
+  }
+
+  draw(r: Renderer): void {
+    const rot = Math.sin(this.t * 0.015) * 0.04;
+    r.sprite(this.a, this.x, this.y, rot);
+    if (this.flash > 0) r.white(this.a, this.x, this.y, rot, 1, 0.45);
+    if (this.shielded > 0 && this.entry <= 0) {
+      r.white(this.a, this.x, this.y, rot, 1, 0.15 + 0.15 * Math.sin(this.t * 0.8));
+    }
+  }
+
+  drawGlow(r: Renderer): void {
+    const rot = Math.sin(this.t * 0.015) * 0.04;
+    const heartbeat = 0.45 + 0.2 * Math.max(0, Math.sin(this.t * (this.desperate ? 0.2 : 0.1)));
+    r.glow(this.a, this.x, this.y, rot, 1, heartbeat);
+    if (this.laser !== 'idle') this.drawBeam(r);
+  }
+
+  private drawBeam(r: Renderer): void {
+    const ctx = r.ctx;
+    const charging = this.laser === 'charge';
+    r.resetTransform();
+    ctx.translate(this.laserX, this.laserY);
+    ctx.rotate(this.laserAngle);
+    const half = charging ? 1.5 + (1 - this.laserTimer / LASER_CHARGE) * 2 : LASER_HALF * Math.min(1, (LASER_FIRE - this.laserTimer) / 4 + 0.3);
+    if (charging) {
+      const locked = this.laserTimer <= 12;
+      ctx.globalAlpha = locked ? 0.9 : 0.4 + Math.sin(this.t * 0.6) * 0.25;
+      ctx.fillStyle = locked ? '#ffffff' : '#ff6b6b';
+      ctx.fillRect(0, -half, LASER_LENGTH, half * 2);
+      ctx.globalAlpha = 0.15;
+      ctx.fillStyle = '#ff4444';
+      ctx.fillRect(0, -half * 5, LASER_LENGTH, half * 10);
+    } else {
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = '#ff4444';
+      ctx.fillRect(-20, -half * 2.4, LASER_LENGTH, half * 4.8);
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = '#ffb0b0';
+      ctx.fillRect(-20, -half, LASER_LENGTH, half * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-20, -half * 0.4, LASER_LENGTH, half * 0.8);
+    }
+    ctx.globalAlpha = 1;
+    r.dot('#ff6b6b', this.laserX, this.laserY, charging ? 30 : 60, 0.9);
+  }
+}

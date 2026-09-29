@@ -1,179 +1,94 @@
-# Claude Shooter — Carrion Ix
+# Claude Shooter — Carrion IX
 
 <p align="center">
   <img src="assets/images/poster.png" alt="CARRION IX — MOTHER OF ENGINES" width="420">
 </p>
 
-Browser-based bio-mechanical horizontal shoot-'em-up. Built on PixiJS v8 + custom WebGL shaders.
+A bio-mechanical horizontal shoot-'em-up that runs in **any modern browser** — desktop or phone, keyboard, touch or gamepad. No install, no WebGL, no extensions to disable.
 
 > *In the bone-light of dead stars, the swarm remembers your name. Fly the* Vespertine. *Burn the hive.*
 
-Status: **feature-complete personal project** (May 2026). See [Deployment notes](#deployment-notes) at the bottom for why this didn't ship widely. Poster source: [`docs/poster.html`](docs/poster.html) (animated HTML version, designed in Claude Design).
+**Play:** https://wonderjimmy.github.io/claude-shooter/ (deployed automatically from `main` by GitHub Actions)
 
-## Play
+## Controls
 
-> ⚠ **Browser extension warning**: a wallet (MetaMask / Coinbase / Phantom / etc.) or `Claude in Chrome` extension will show an "EXTENSION CONFLICT" overlay on launch — these inject SES lockdown into every page and block PixiJS from compiling shaders. Quick fix: `chrome://extensions` → toggle the offender off → reload. Or use Safari / Firefox / Incognito. See [Deployment notes](#deployment-notes) for the full story.
-
-| | |
-|---|---|
-| Move | Arrow keys / WASD |
-| Fire | Space / J |
-| Mute | M |
-| Difficulty toggle | H |
-| Restart | R |
-
-First key press unlocks audio (browser autoplay policy).
-
-## Goal
-
-Survive 5 enemy variants until you score **7000** (Normal) or **9000** (Hard) — the 3-stage **Carrion Ix** boss appears. Beat all three phases for victory.
-
-| Enemy | HP | Score | Behavior |
+| | Keyboard | Touch | Gamepad |
 |---|---|---|---|
-| Wasp | 1 | 100 | Fast, weaving, fires straight stinger |
-| Cyborg | 3 | 150 | Tank, aimed bone shard |
-| Brain | 2 | 200 | Wide sine, 3-bullet psi spread |
-| Mantis | 2 | 250 | Mid speed, aimed blade |
-| Crystal | 4 | 300 | Slow, 5-bullet shotgun |
+| Fly | WASD / Arrows | drag anywhere (relative) | stick / D-pad |
+| Fire | Space / J / Z (F toggles auto-fire) | automatic | A / RT |
+| Bomb | X / K | ✹ button | B / X |
+| Focus (slow + show hitbox) | Shift / L | — | LB / RB / LT |
+| Pause | Esc / P | ❚❚ button | Start |
+| Mute | M | Settings | — |
 
-Boss kill: +5000 score. Boss has 3 phases (spread fan → dual-emitter burst + telegraphed laser beam → 10-bullet rotating ring + aimed shot).
+The game also auto-pauses when the tab loses focus.
 
-## Power-ups
+## How it plays
 
-12% drop on enemy kill (8% on Hard).
+- **Three sectors, then the boss.** *Outer Husk* → *Sinew Drift* → *Hive Throat*, each a shuffled deck of authored formations (lines, V-wings, pincers, sine snakes, turrets, lunging mantises) ending on a red-haloed **elite**. Then **Carrion IX**: three phases, a telegraphed lance in phase two, and a spiral frenzy below 40 % in phase three.
+- **Enemies have jobs.** Wasps swarm, cyborgs anchor, brains snake, mantises park → wind up → lunge at where you were, crystals hover as turrets and leave.
+- **Power 1–4.** P orbs upgrade the main gun. A hit costs one hull *and* one power level, which drops out so you can grab it back. Nearby bullets are cleared when you're hit so one mistake doesn't cascade.
+- **Bombs are stock** (max 5). A bomb turns every bullet on screen into score gems.
+- **Scoring:** kill quickly to build a **chain** (×1 → ×8); **graze** bullets past your tiny core for points and to keep the chain alive; sector-clear bonuses; hull / bomb / no-miss bonuses on victory; extend every 100 000.
+- **Easy / Normal / Hard**, then **Loop 2, 3…** after a win — keeps your score and power, and the hive gets faster and tougher.
+- Results screen with rank (S–D), stats, local top-8 board per difficulty, and a Share button (Web Share API or clipboard).
 
-| Pickup | Effect |
+| Enemy | HP | Score | Behaviour |
+|---|---|---|---|
+| Wasp | 1 | 100 | fast, weaving, straight stinger |
+| Cyborg | 3 | 150 | tank, aimed bone shard |
+| Brain | 2 | 200 | sine snake, 3-way psi spread |
+| Mantis | 2 | 250 | park, wind-up, lunge |
+| Crystal | 4 | 300 | hovering turret, 5-way shotgun |
+
+Elites: ×4 HP, ×4 score, faster and denser fire, guaranteed power drop + gem shower.
+
+| Pick-up | Effect |
 |---|---|
-| 🛡 Shield | 9s invincibility |
-| ✦ Spread | 15s 5-bullet fan (per-bullet damage reduced to 0.35× to keep balance) |
-| ⚡ Speed | 15s movement × 1.9 |
-| ⊞ Multi | 15s fire rate × 3 |
-| ⊳ Laser | 15s big piercing laser (proj-charge sprite, hits each target once) |
-| ❤ Life | +1 HP |
-| 💣 Bomb | clear all enemy bullets + 2 dmg to all enemies & boss |
-| ¥ Coin | +500 score |
-
-## Tuning panel (dev only)
-
-Append `?tune` to the URL to surface the `lil-gui` panel for live filter / audio / background tuning. Settings persist to `localStorage`. Without `?tune`, the panel is hidden.
+| P | weapon power +1 (max 4) |
+| Shield | 9 s invulnerable |
+| Spread | 15 s extra fan shots |
+| Rapid | 15 s fire rate ×2.2 |
+| Lance | 15 s piercing main gun |
+| Boost | 15 s speed ×1.7 |
+| Bomb | +1 bomb |
+| Hull | +1 hull |
+| Coin | +500 |
+| Gem | 50 × chain (from cancelled bullets) |
 
 ## Build / dev
 
 ```bash
 npm install
-npm run dev       # vite dev server, http://localhost:5173
+npm run dev       # http://localhost:5173
 npm run build     # type-check + production bundle → dist/
 npm run preview   # serve dist/ locally
 ```
 
-## Architecture
+Dev helpers: open with `?debug` and press **1** invincible · **2** skip sector · **3** skip to boss · **4** max power/bombs. `?debug&skip=boss` starts at the boss warning.
 
-See [CLAUDE.md](CLAUDE.md) for the full breakdown — entity model, filter stack, asset pipeline, boss state machine, audio system, difficulty multipliers, win sequence orchestration.
+## Deploying
+
+`.github/workflows/deploy.yml` builds and publishes `dist/` to GitHub Pages on every push to `main`. One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+`dist/` is plain static files with relative paths, so it also works on Cloudflare Pages / Workers, Netlify, itch.io (upload a zip of `dist/`) or any web server.
+
+## Why the rewrite (v0.2)
+
+The first version (May 2026) was built on PixiJS v8 + WebGL filters and was feature-complete, but it never reached its audience: wallet / Claude-in-Chrome extensions that inject SES lockdown blocked Pixi's runtime shader compilation, Firefox lost the WebGL context, Safari/Tauri lagged, Electron hung in `Application.init()`, and phones were refused outright.
+
+v0.2 follows the lesson that write-up ended on — *"pure Canvas 2D … ship surface 100×"* — and goes further:
+
+- **Rendering:** Canvas 2D only. Every SVG sprite is rasterised once at boot at the exact device resolution, colour-graded in software (the same saturate/brightness/contrast grade the Pixi build used), and given a pre-blurred bloom twin. At runtime it's `drawImage` + additive blending — no WebGL, no shaders, no `eval`/`new Function`, so SES-locked pages, Firefox, Safari and phones all behave the same. JS bundle went from ~460 KB to ~155 KB.
+- **Background:** fully procedural, per-sector scenery — domain-warped fbm nebulae, a celestial body per sector (dead star, ringed gas giant, the hive's eye, a blood eclipse for the boss, a gold dawn on victory), rim-lit carcass spines in parallax, wisps, spores, meteors and flesh walls in the Hive Throat — cross-fading between sectors and streaking into warp between them.
+- **Audio:** WebAudio. SFX are decoded buffers (no pool limits, no latency); BGM streams through `<audio>` routed into gain nodes so fades and volume work on iOS; BGM re-encoded to 128 kbps (`assets/audio/web/`) to halve download size. Pick-up, power, graze, bomb, chain and warning sounds are synthesized.
+- **Feel:** fixed-step simulation (identical on 60/120/144 Hz), hitstop on heavy hits, slow-mo boss death, graze sparks, score pop-ups, warp transitions.
+- **Reach:** touch controls, gamepad, auto-fire, portrait prompt, fullscreen + landscape lock on Android, PWA manifest (add to home screen), reduced-flash / no-shake / scanline / quality options, adaptive quality when the frame rate dips.
+
+`src-tauri/` and `electron/` are kept; both should now work since they only load `dist/`, but they're untested.
 
 ## Credits
 
-- **Carrion Ix asset pack** (30 SVGs): Anthropic Claude Design
+- **Carrion Ix asset pack** (sprites): Anthropic Claude Design
 - **Music & SFX**: generated via Suno
-- **Engine**: PixiJS v8 + pixi-filters + lil-gui
-
----
-
-# Deployment notes
-
-This game is feature-complete but **does not ship cleanly to its intended audience** (Anthropic-internal friends). The struggle is documented here for future reference.
-
-## Final state
-
-- ✅ Game logic: full arc end-to-end (waves → boss → win → restart, both difficulties, all 8 power-ups, 3 BGM, 7 SFX, animated outro)
-- ✅ `dist/` builds clean, deployable to any static host
-- ✅ Live web URL on Cloudflare Workers (works for users without SES-injecting extensions)
-- ⚠ Desktop app paths (Tauri / Electron) attempted, both blocked by upstream issues
-
-## What we tried, what broke
-
-| # | Path | Result | Root cause |
-|---|---|---|---|
-| 1 | Vercel CLI deploy | ❌ login fail | OIDC discovery endpoint returned HTML (network proxy intercept) |
-| 2 | Cloudflare Workers static | ⚠ Server OK, fails for ~25% of users | Wallet / Claude-in-Chrome extensions inject SES lockdown, CSP blocks `eval` → PixiJS can't compile shaders |
-| 3 | iframe sandbox wrapper | ❌ no escape | chext extension manifest declares `all_frames: true` — sandbox iframes are also injected |
-| 4 | Tauri desktop (Rust + WebView) | ⚠ Boots but lags | macOS Tauri uses WKWebView (same as Safari); WebGL2 perf is significantly weaker than Chromium for our filter stack |
-| 5 | Electron desktop (Chromium) | ❌ Hangs | `Application.init()` from PixiJS v8 never resolves — WebGL context creation appears to deadlock under Electron 42 + macOS GPU. Even with `webSecurity: false`, custom `app://` protocol, default-Vite chunking, the await never returns |
-
-## Browser × engine compatibility
-
-| Browser | Engine | Has chext-class extension? | Game runs? |
-|---|---|---|---|
-| Chrome | Chromium | typically yes | ❌ SES blocks |
-| Edge / Brave / Opera / Vivaldi / Arc | Chromium | yes | ❌ |
-| Firefox | Gecko | no | ❌ WebGL context lost (PixiJS v8 specific) |
-| **Safari** | **WebKit** | no | ⚠ Runs but lag (acceptable on M-series) |
-| Tauri (Mac) | WKWebView | n/a | ⚠ Same lag as Safari |
-| Electron (Mac) | Chromium | n/a | ❌ `app.init()` hang |
-
-The only fully-functional combo for the intended audience is **Safari**, which the audience doesn't use.
-
-## Diagnosis: it's not (mostly) PixiJS's fault
-
-| Issue | Real cause | Would changing framework help? |
-|---|---|---|
-| chext SES blocks eval | Wallet/SES extensions hit any modern JS framework using dynamic shader compile | ❌ Three.js / Phaser also hit |
-| WKWebView lag | Safari WebGL2 implementation is slower; bloom + per-bullet blur compounds | ❌ Any GPU-heavy 2D lib affected |
-| Firefox WebGL context lost | PixiJS v8-specific issue (v7 unaffected) | ✅ Pixi v7 / Three.js OK |
-| Electron init hang | Likely Electron 42 + Pixi v8 + macOS GPU race — not isolated | ⚠ Unverified |
-
-**~60%** of the friction is the audience's browser ecosystem (chext is near-universal in Anthropic). **~30%** is WKWebView's GPU weakness on Mac. Only **~10%** is genuine PixiJS-specific.
-
-## Performance tuning attempted
-
-To squeeze the WKWebView path, several universal cuts were made:
-
-| Knob | Original → Final |
-|---|---|
-| BloomFilter | quality 4 / strength 10 → quality 1 / strength 5 |
-| Per-bullet BlurFilter | one filter pass per bullet → **dropped entirely** |
-| Particle MAX_ACTIVE | uncapped → 350 |
-| `devicePixelRatio` cap | 2 → 1.25 |
-
-WKWebView still lags after all of these. The remaining cost is Pixi's ColorMatrix + Chromatic + Bloom stack on stage filters; dropping these makes the game look flat.
-
-## Mitigations shipped
-
-What's actually in production:
-
-1. **Boot-time detection overlays** in [main.ts](src/main.ts):
-   - `DESKTOP ONLY` if mobile (no keyboard)
-   - `WEBGL UNAVAILABLE` if no GL context
-   - `EXTENSION CONFLICT` if SES detected (with `chrome://extensions` instructions)
-   - `BOOT ERROR` with stack trace fallback
-2. **Error wrapping**: `window.error` + `unhandledrejection` listeners surface errors instead of silent black screen.
-3. **README warning** above so anyone clicking the link knows what to do.
-
-## Decision
-
-**Ship as-is, accept the 25–30% audience friction**. The cost of "fixing" this is enormous:
-
-| Fix | Cost | Reward |
-|---|---|---|
-| Self-written vanilla WebGL2 with hardcoded GLSL | 80–120 hrs | escapes SES |
-| Pixi v7 downgrade | unknown | might fix Firefox + Electron |
-| Migrate to Phaser / Canvas-only stack | 40–60 hrs | partial relief |
-| Wait for chext team to relax SES | 0 | unknown timeline |
-
-None of these have positive ROI for a personal project. The game is complete; it lives at the Cloudflare URL; people who really want to play can disable the extension for 30 seconds.
-
-## What's left in the repo
-
-- `src/` — main game code (PixiJS v8)
-- `assets/` — Carrion Ix sprites + Suno-generated audio
-- `dist/` — production build (rebuild via `npm run build`)
-- `src-tauri/` — Tauri scaffold (kept as archive; `npm run tauri:dev` still works if you want to demo on Mac)
-- `electron/` — Electron scaffold (kept; `npm run electron` hangs at `app.init`, fix unknown)
-- `CLAUDE.md` — full architecture reference
-
-## Lessons for the next project
-
-1. **Test on the target audience's browser + extensions on day 1**, not after Phase 2.4.
-2. **Avoid frameworks that dynamically compile shaders via `Function()`** if shipping to crypto-curious / Anthropic-style audiences.
-3. **Single-bundle output is essential** for desktop app paths (Vite's default chunk-splitting kills `file://` ES module loading).
-4. **Mac WKWebView is a perf cliff** — don't assume Safari/Tauri rendering matches Chromium. Test before committing visual ambition.
-5. **For SES-safe web ship**, consider tiny engines like [LittleJS](https://github.com/KilledByAPixel/LittleJS) or pure Canvas 2D with `ctx.shadowBlur` — visual ceiling lower but ship surface 100×.
+- **Fonts**: JetBrains Mono, Space Grotesk (SIL OFL, self-hosted via @fontsource)

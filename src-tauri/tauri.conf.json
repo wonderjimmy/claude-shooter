@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Claude Shooter",
+  "productName": "Carrion IX",
   "version": "0.0.1",
   "identifier": "com.jimmy.claudeshooter",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Claude Shooter",
+        "title": "Carrion IX",
         "width": 1280,
         "height": 720,
         "minWidth": 960,
